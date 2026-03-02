@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="Homestyle.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">Portfolio</div>
+        <ul>
+            <li><a href="Home.html" class="active">Home</a></li>
+            <li><a href="About.html">About</a></li>
+            <li><a href="Projects.html">Projects</a></li>
+            <li><a href="Skills.html">Skills</a></li>
+            <li><a href="Contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Game Developer & Software Enthusiast</h1>
+            <p>Unity Game Developer | Python | Web Developer</p>
+
+            <div class="buttons">
+                <a href="Projects.html" class="btn primary">View Projects</a>
+                <a href="Contact.html" class="btn secondary">Contact Me</a>
+            </div>
+        </div>
+
+        <div class="hero-image">
+            <img src="images/profile.jpg" alt="Profile">
+        </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="skills">
+        <div class="skill-card unity">
+            <img src="images/unity.png" alt="Unity">
+            <p>Unity</p>
+        </div>
+
+        <div class="skill-card python">
+            <img src="images/python.png" alt="Python">
+            <p>Python</p>
+        </div>
+
+        <div class="skill-card">
+            <img src="images/html.png" alt="HTML">
+            <p>HTML</p>
+        </div>
+
+        <div class="skill-card">
+            <img src="Images/css.png" alt="CSS">
+            <p>CSS</p>
+        </div>
+        <div class="skill-card">
+            <img src="Images/javascript.png" alt="javascript">
+            <p>JavaScript</p>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section class="projects">
+        <div class="card1 Game-card">
+            <div class="youtube-container">
+                <iframe 
+                    width="100%" 
+                    height="200" 
+                    src="https://www.youtube.com/embed/jLHLz9n6tJU?autoplay=1&mute=1&loop=1&playlist=jLHLz9n6tJU"
+                    title="Coin Rush Ninja Gameplay"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <h1>Coin Rush Ninja</h1>
+            <h2>Endless Runner Game</h2>
+            <a href="#" class="btn1">View Project</a>
+        </div>
+
+        <div class="card1 python-card">
+            <video class="project-video" autoplay muted loop playsinline>
+                <source src="Videos/FV.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <h1>Calculator App</h1>
+            <h2>Python Project</h2>
+            <a href="#" class="btn1">View Project</a>
+        </div>
+    </section>
+
+</body>
+
+</html>

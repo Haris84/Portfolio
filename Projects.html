@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects</title>
+    <!-- separate CSS file (Projectsstyle.css) -->
+    <link rel="stylesheet" href="Project_style.css">
+</head>
+<body>
+
+<!-- header / navigation (exact style from the design) -->
+<header>
+    <nav>
+        <div class="logo">Your Name</div>
+        <ul>
+            <li><a href="Home.html">Home</a></li>
+            <li><a href="About.html">About</a></li>
+            <li><a href="Projects.html" class="active">Projects</a></li>
+            <li><a href="Skills.html">Skills</a></li>
+            <li><a href="Contact.html">Contact</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- main projects section -->
+<main>
+    <!-- section title + description -->
+    <div class="projects-header">
+        <h1>Projects</h1>
+        <p class="subhead">
+            Here are some of the projects I have worked on, showcasing my skills in game development and web development.
+        </p>
+    </div>
+
+    <!-- project cards grid – 4 cards with images (right size) -->
+    <div class="cards-grid">
+
+        <!-- card 1 – Coin Rush Ninja (endless runner) with game image -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="Images/Gameimage.jpg" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Coin Rush Ninja</h2>
+                <p class="project-tag">Endless Runner Game</p>
+                <div class="card-meta">⭐ 42.5</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+
+        <!-- card 2 – Python Calculator (with calculator image) -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="Images/calculator1.png"
+                 alt="Python Calculator icon" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Python Calculator</h2>
+                <p class="project-tag">Python App</p>
+                <div class="card-meta">⚡ 22x5</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+
+        <!-- card 3 – Weather App (with sun/clouds) -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='160' viewBox='0 0 280 160'%3E%3Crect width='280' height='160' fill='%2394c5ff' opacity='0.3'/%3E%3Ccircle cx='90' cy='70' r='30' fill='%23fbbf24'/%3E%3Ccircle cx='160' cy='90' r='25' fill='%23d1d5db'/%3E%3Ccircle cx='200' cy='70' r='22' fill='%239ca3af'/%3E%3Ctext x='50' y='140' font-family='Arial' font-size='26' fill='%230b1e33'%3E22°C%3C/text%3E%3C/svg%3E"
+                 alt="Weather App icon" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Weather App</h2>
+                <p class="project-tag">JavaScript App</p>
+                <div class="card-meta">☀️ clear sky</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+
+        <!-- card 4 – Personal Portfolio (responsive website) -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="Images/personalprofoliol.png"
+                 alt="Personal Portfolio icon" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Personal Portfolio</h2>
+                <p class="project-tag">Responsive Website</p>
+                <div class="card-meta">📁 Projects</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+    </div>
+
+    <!-- second row: additional four cards with matching images -->
+    <div class="cards-grid second-row">
+        <!-- card 5 – Coin Rush Ninja (second variation) -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='160' viewBox='0 0 280 160'%3E%3Crect width='280' height='160' fill='%23f97316' opacity='0.2'/%3E%3Ccircle cx='120' cy='70' r='25' fill='%23fbbf24'/%3E%3Ccircle cx='180' cy='70' r='25' fill='%23f59e0b'/%3E%3Cpolygon points='150,40 170,80 130,80' fill='%232563eb'/%3E%3Ctext x='100' y='130' font-family='Arial' font-size='24' fill='%23333'%3Ecoin%3C/text%3E%3C/svg%3E"
+                 alt="Coin Rush Ninja" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Coin Rush Ninja</h2>
+                <p class="project-tag">Endless Runner Game</p>
+                <div class="card-meta">⭐ 4.8</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+
+        <!-- card 6 – Weather App (second) -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='160' viewBox='0 0 280 160'%3E%3Crect width='280' height='160' fill='%237fb7f0' opacity='0.25'/%3E%3Ccircle cx='130' cy='70' r='30' fill='%23fdba74'/%3E%3Cpath d='M190 80 Q210 60, 230 80' stroke='%236b7280' stroke-width='6' fill='none'/%3E%3Ccircle cx='200' cy='95' r='18' fill='%23e2e8f0'/%3E%3Ctext x='70' y='140' font-family='Arial' font-size='26' fill='%23000'%3E21°C%3C/text%3E%3C/svg%3E"
+                 alt="Weather App" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Weather App</h2>
+                <p class="project-tag">JavaScript App</p>
+                <div class="card-meta">🌤️ 21°C</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+
+        <!-- card 7 – Personal Portfolio (second) -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='160' viewBox='0 0 280 160'%3E%3Crect width='280' height='160' fill='%23a78bfa' opacity='0.15'/%3E%3Crect x='70' y='45' width='140' height='70' rx='10' fill='%23f9fafb' stroke='%233b82f6' stroke-width='3'/%3E%3Cline x1='90' y1='70' x2='190' y2='70' stroke='%233b82f6' stroke-width='4'/%3E%3Ccircle cx='120' cy='90' r='6' fill='%232563eb'/%3E%3Ccircle cx='160' cy='90' r='6' fill='%232563eb'/%3E%3C/svg%3E"
+                 alt="Personal Portfolio" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Personal Portfolio</h2>
+                <p class="project-tag">Responsive Website</p>
+                <div class="card-meta">🖥️ v2.0</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+
+        <!-- card 8 – Shortly App (URL shortener) with image -->
+        <article class="project-card">
+            <div class="card-img">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='160' viewBox='0 0 280 160'%3E%3Crect width='280' height='160' fill='%234ade80' opacity='0.2'/%3E%3Crect x='60' y='50' width='160' height='40' rx='20' fill='%232563eb'/%3E%3Ctext x='110' y='80' font-family='Arial' font-size='24' fill='white'%3Eshort%3C/text%3E%3Ccircle cx='120' cy='110' r='12' fill='%23f59e0b'/%3E%3Ccircle cx='180' cy='110' r='12' fill='%23f59e0b'/%3E%3C/svg%3E"
+                 alt="Shortly App" class="project-image">
+            </div>
+            <div class="card-content">
+                <h2>Shortly App</h2>
+                <p class="project-tag">URL shortener</p>
+                <div class="card-meta">🔗 1k+</div>
+            </div>
+            <div class="card-footer">
+                <a href="#" class="view-btn">View Project</a>
+            </div>
+        </article>
+    </div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,261 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #e6edf5, #f5f7fa);
+    color: #2c3e50;
+    line-height: 1.5;
+}
+
+/* ----- NAVBAR (exact from original) ----- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 40px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+nav .logo {
+    font-size: 26px;
+    font-weight: 700;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 40px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #4a5568;
+    font-weight: 500;
+    position: relative;
+    transition: 0.3s ease;
+}
+
+nav ul li a:hover {
+    color: #2563eb;
+}
+
+nav ul li a.active {
+    color: #2563eb;
+}
+
+nav ul li a.active::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: #2563eb;
+    left: 0;
+    bottom: -8px;
+    border-radius: 5px;
+}
+
+.about-container {
+    margin-top: 80px;
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    flex-wrap: wrap;
+}
+
+/* ----- IMAGE ----- */
+.about-image img {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 25px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    display: block;
+}
+
+/* ----- CONTENT ----- */
+.about-content {
+    flex: 1;
+    min-width: 300px;
+}
+
+.about-content h1 {
+    font-size: clamp(32px, 4vw, 52px);
+    margin-bottom: 25px;
+    font-weight: 700;
+}
+
+.about-content p {
+    font-size: clamp(16px, 2vw, 20px);
+    line-height: 1.8;
+    color: #4a5568;
+    margin-bottom: 40px;
+}
+
+/* ----- CARDS (exactly as the image: three cards, no extra icons)  ----- */
+.about-cards {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 20px;
+    flex: 1 1 180px;
+    min-width: 200px;
+    max-width: 280px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.card h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.card p {
+    font-size: 15px;
+    color: #6b7280;
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+/* ----- BUTTON (exact .btn style) ----- */
+.btn {
+    display: inline-block;
+    padding: 15px 35px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+    transition: 0.3s ease;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(37, 99, 235, 0.6);
+}
+
+/* ----- optional skill-icons (from original code) keep to be consistent with your base */
+.skill-icons {
+    margin-top: 40px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.skill-icons img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* ===== FULL RESPONSIVENESS ===== */
+@media (max-width: 992px) {
+    .about-wrapper {
+        padding: 40px;
+    }
+    .about-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 50px;
+    }
+    .about-cards {
+        justify-content: center;
+    }
+    .card {
+        max-width: 260px;
+    }
+    .skill-icons {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 5%;
+    }
+    nav ul {
+        gap: 25px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .about-wrapper {
+        padding: 30px 25px;
+        margin: 30px 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    nav ul {
+        gap: 18px;
+    }
+    nav ul li a {
+        font-size: 0.95rem;
+    }
+    .about-wrapper {
+        padding: 25px 15px;
+    }
+    .about-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+    .card {
+        max-width: 100%;
+        width: 100%;
+    }
+    .skill-icons {
+        gap: 12px;
+    }
+    .skill-icons img {
+        width: 45px;
+        height: 45px;
+    }
+    .btn {
+        padding: 14px 30px;
+    }
+}
+footer{
+    height: 30px;
+}
+
+/* small screens extra polish */
+@media (max-width: 400px) {
+    nav ul {
+        gap: 12px;
+    }
+    .about-content h1 {
+        font-size: 2.2rem;
+    }
+}
