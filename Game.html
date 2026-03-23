@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Galaxy Survival: Space Shooter</title>
+  <script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Orbitron', monospace;
+    }
+
+    #GW {
+      position: relative;
+      width: 420px;
+      height: 740px;
+      overflow: hidden;
+    }
+
+    #BG,
+    #GC {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    #GC {
+      z-index: 1;
+      touch-action: none;
+    }
+
+    #HUD {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #HUD_TOP {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px 4px;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, .85), transparent);
+    }
+
+    .HBOX {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .HLB {
+      font-size: 7px;
+      color: rgba(255, 200, 50, .6);
+      letter-spacing: 2px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .HLV {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+
+    #HSC {
+      color: #fff;
+      text-shadow: 0 0 10px #ffcc00, 0 0 20px rgba(255, 200, 0, .4);
+    }
+
+    #HCN {
+      color: #ffee00;
+      font-size: 14px;
+      text-shadow: 0 0 8px #ffcc00;
+    }
+
+    #HLIVES {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .liveicon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+    }
+
+    #HXPBAR {
+      margin: 0 12px 4px;
+      height: 4px;
+      background: rgba(255, 255, 255, .08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #HXPFILL {
+      height: 100%;
+      background: linear-gradient(90deg, #ff8800, #ffcc00);
+      border-radius: 2px;
+      transition: width .3s;
+    }
+
+    #HHPBAR_WRAP {
+      margin: 0 12px 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #HHPLABEL {
+      font-size: 7px;
+      color: rgba(0, 255, 120, .5);
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    #HHPBAR {
+      flex: 1;
+      height: 7px;
+      background: rgba(255, 255, 255, .06);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 255, 120, .15);
+    }
+
+    #HHPFILL {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #00ff88, #00ffcc);
+      box-shadow: 0 0 6px #00ff88;
+      transition: width .15s, background .3s;
+    }
+
+    #HWEPBADGE {
+      position: absolute;
+      bottom: 145px;
+      right: 12px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+      pointer-events: none;
+    }
+
+    .wbadge {
+      font-size: 8px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 1px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+    }
+
+    #PUD {
+      position: absolute;
+      top: 62px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      display: flex;
+      gap: 5px;
+      pointer-events: none;
+    }
+
+    .pp {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 7px;
+      letter-spacing: 1px;
+      font-weight: 700;
+      animation: ppA 1s ease-in-out infinite;
+    }
+
+    .pp.shield {
+      background: rgba(0, 100, 255, .35);
+      border: 1px solid #0088ff;
+      color: #99ddff;
+    }
+
+    .pp.rapid {
+      background: rgba(255, 180, 0, .25);
+      border: 1px solid #ffcc00;
+      color: #ffee99;
+    }
+
+    .pp.double {
+      background: rgba(255, 0, 80, .25);
+      border: 1px solid #ff0055;
+      color: #ffaacc;
+    }
+
+    .pp.magnet {
+      background: rgba(160, 0, 255, .25);
+      border: 1px solid #aa00ff;
+      color: #ddaaff;
+    }
+
+    @keyframes ppA {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .5
+      }
+    }
+
+    #WAVEBANNER {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      z-index: 22;
+      text-align: center;
+      pointer-events: none;
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    #WAVEBANNER.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #WBTEXT {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      -webkit-text-stroke: 1px #ff8800;
+      color: #ffcc00;
+      text-shadow: 0 0 20px #ff8800, 0 0 40px rgba(255, 140, 0, .5);
+    }
+
+    #WBSUB {
+      font-size: 10px;
+      color: rgba(255, 200, 100, .6);
+      letter-spacing: 5px;
+      margin-top: 3px;
+    }
+
+    #BOSSWARN {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 25;
+      text-align: center;
+      display: none;
+      pointer-events: none;
+    }
+
+    #BOSSWARN.flash {
+      display: block;
+      animation: bfl .4s infinite;
+    }
+
+    #BWTEXT {
+      font-size: 34px;
+      font-weight: 900;
+      color: #ff0080;
+      text-shadow: 0 0 25px #ff0080;
+      letter-spacing: 3px;
+    }
+
+    @keyframes bfl {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .06
+      }
+    }
+
+    .FT {
+      position: absolute;
+      z-index: 35;
+      font-family: 'Orbitron', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      pointer-events: none;
+      animation: ftA .9s ease-out forwards;
+    }
+
+    @keyframes ftA {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1.1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(.7)
+      }
+    }
+
+    #PAUSEBTN {
+      position: absolute;
+      top: 9px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      background: rgba(0, 0, 0, .5);
+      border: 1px solid rgba(255, 200, 0, .2);
+      color: rgba(255, 200, 0, .45);
+      font-family: 'Orbitron', monospace;
+      font-size: 7px;
+      letter-spacing: 2px;
+      padding: 3px 10px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: all .2s;
+    }
+
+    #PAUSEBTN:hover {
+      border-color: rgba(255, 200, 0, .6);
+      color: #ffcc00;
+    }
+
+    #SNDBTN {
+      position: absolute;
+      top: 9px;
+      right: 12px;
+      z-index: 15;
+      background: rgba(0, 0, 0, .5);
+      border: 1px solid rgba(255, 200, 0, .2);
+      color: rgba(255, 200, 0, .45);
+      font-family: 'Orbitron', monospace;
+      font-size: 9px;
+      padding: 3px 7px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+
+    #SNDBTN:hover {
+      color: #ffcc00;
+    }
+
+    /* ── D-PAD CONTROLS ── */
+    #DPAD {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      user-select: none;
+    }
+
+    .DROW {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+    }
+
+    .DBTN {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(255, 200, 0, .08);
+      border: 1.5px solid rgba(255, 200, 0, .25);
+      color: rgba(255, 200, 0, .7);
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .1s, border-color .1s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .DBTN:active,
+    .DBTN.pressed {
+      background: rgba(255, 200, 0, .22);
+      border-color: rgba(255, 200, 0, .6);
+      color: #ffcc00;
+      box-shadow: 0 0 12px rgba(255, 180, 0, .35);
+    }
+
+    .DBTN.mid {
+      background: rgba(255, 255, 255, .04);
+      border-color: rgba(255, 255, 255, .08);
+      width: 34px;
+      height: 34px;
+      font-size: 13px;
+    }
+
+    .SCR {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-y: auto;
+    }
+
+    .SCR.hidden {
+      display: none;
+    }
+
+    #SCR_TITLE {
+      background: radial-gradient(ellipse at 50% 30%, rgba(40, 10, 80, .98), rgba(2, 3, 12, .99));
+      justify-content: center;
+    }
+
+    .TITLE_LOGO {
+      font-size: 32px;
+      font-weight: 900;
+      text-align: center;
+      line-height: 1.15;
+      color: #fff;
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px #ff8800, 0 0 50px rgba(255, 140, 0, .25);
+      margin-bottom: 4px;
+    }
+
+    .TITLE_LOGO span {
+      color: #ffcc00;
+      -webkit-text-stroke: .5px #ff8800;
+    }
+
+    .TITLE_SUB {
+      font-size: 9px;
+      color: rgba(255, 200, 80, .4);
+      letter-spacing: 6px;
+      margin-bottom: 32px;
+    }
+
+    .TITLE_BTNS {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .BTN_GOLD {
+      font-family: 'Orbitron', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      padding: 13px 44px;
+      background: linear-gradient(135deg, #ff8800, #ffcc00, #ff8800);
+      border: none;
+      color: #000;
+      cursor: pointer;
+      border-radius: 25px;
+      text-transform: uppercase;
+      box-shadow: 0 0 25px rgba(255, 140, 0, .5), 0 4px 15px rgba(0, 0, 0, .5);
+      transition: all .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .BTN_GOLD::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .3), transparent);
+      transition: .4s;
+    }
+
+    .BTN_GOLD:hover::before {
+      left: 100%;
+    }
+
+    .BTN_GOLD:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(255, 160, 0, .7);
+    }
+
+    .BTN_OUTLINE {
+      font-family: 'Orbitron', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      padding: 10px 28px;
+      background: transparent;
+      border: 1.5px solid rgba(255, 200, 50, .35);
+      color: rgba(255, 200, 50, .6);
+      cursor: pointer;
+      border-radius: 20px;
+      transition: all .2s;
+    }
+
+    .BTN_OUTLINE:hover {
+      border-color: rgba(255, 200, 50, .7);
+      color: #ffcc00;
+    }
+
+    #SCR_SHOP {
+      background: linear-gradient(180deg, rgba(5, 5, 20, .98), rgba(10, 5, 30, .99));
+      padding: 12px;
+      padding-top: 16px;
+    }
+
+    .SHOP_HEADER {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .SHOP_TITLE {
+      font-size: 16px;
+      font-weight: 900;
+      color: #ffcc00;
+      letter-spacing: 3px;
+      text-shadow: 0 0 12px #ff8800;
+    }
+
+    .SHOP_COINS_BADGE {
+      background: linear-gradient(135deg, rgba(255, 160, 0, .15), rgba(255, 200, 0, .08));
+      border: 1px solid rgba(255, 200, 0, .3);
+      border-radius: 12px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: #ffee00;
+      letter-spacing: 1px;
+    }
+
+    .SHOP_TABS {
+      display: flex;
+      gap: 4px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .STAB {
+      flex: 1;
+      padding: 7px 4px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 8px;
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      color: rgba(255, 255, 255, .35);
+      cursor: pointer;
+      letter-spacing: 1px;
+      transition: all .2s;
+      text-align: center;
+    }
+
+    .STAB.active {
+      background: linear-gradient(135deg, rgba(255, 140, 0, .2), rgba(255, 200, 0, .1));
+      border-color: rgba(255, 160, 0, .5);
+      color: #ffcc00;
+      text-shadow: 0 0 8px #ff8800;
+    }
+
+    .STAB_CONTENT {
+      display: none;
+      width: 100%;
+    }
+
+    .STAB_CONTENT.active {
+      display: block;
+    }
+
+    .SHIP_GRID {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .SHIP_CARD {
+      background: linear-gradient(135deg, rgba(10, 15, 40, .95), rgba(5, 10, 25, .95));
+      border: 1.5px solid rgba(255, 255, 255, .08);
+      border-radius: 12px;
+      padding: 10px 8px;
+      cursor: pointer;
+      transition: all .25s;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .SHIP_CARD::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 200, 0, .3), transparent);
+    }
+
+    .SHIP_CARD.owned {
+      border-color: rgba(0, 220, 120, .25);
+    }
+
+    .SHIP_CARD.active_ship {
+      border-color: #ffcc00;
+      box-shadow: 0 0 14px rgba(255, 160, 0, .3);
+    }
+
+    .SHIP_CARD:hover:not(.locked_card) {
+      border-color: rgba(255, 160, 0, .45);
+      background: linear-gradient(135deg, rgba(20, 20, 60, .95), rgba(10, 15, 40, .95));
+    }
+
+    .SHIP_CARD.locked_card {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .SHIP_IMG_WRAP {
+      width: 80px;
+      height: 90px;
+      margin: 0 auto 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .SHIP_IMG_WRAP svg {
+      filter: drop-shadow(0 0 8px var(--scol, #00ccff));
+    }
+
+    .SHIP_NAME {
+      font-size: 9px;
+      color: #fff;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+      font-weight: 700;
+    }
+
+    .SHIP_CLASS {
+      font-size: 7px;
+      color: rgba(255, 180, 50, .6);
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .SHIP_STATS {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 6px;
+    }
+
+    .SSTAT {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .SSTAT_LABEL {
+      font-size: 6px;
+      color: rgba(255, 255, 255, .3);
+      width: 24px;
+      letter-spacing: .5px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .SSTAT_BAR {
+      flex: 1;
+      height: 3px;
+      background: rgba(255, 255, 255, .08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .SSTAT_FILL {
+      height: 100%;
+      border-radius: 2px;
+    }
+
+    .SHIP_BTN {
+      font-family: 'Orbitron', monospace;
+      font-size: 8px;
+      letter-spacing: 1px;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+      width: 100%;
+    }
+
+    .SHIP_BTN.buy {
+      background: linear-gradient(135deg, #ff8800, #ffcc00);
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(255, 140, 0, .4);
+    }
+
+    .SHIP_BTN.buy:hover {
+      transform: scale(1.05);
+    }
+
+    .SHIP_BTN.equip {
+      background: linear-gradient(135deg, rgba(0, 200, 100, .2), rgba(0, 255, 140, .1));
+      border: 1px solid rgba(0, 200, 100, .4);
+      color: #00ff88;
+    }
+
+    .SHIP_BTN.equipped {
+      background: linear-gradient(135deg, rgba(255, 160, 0, .15), rgba(255, 200, 0, .08));
+      border: 1px solid rgba(255, 160, 0, .4);
+      color: #ffcc00;
+      cursor: default;
+    }
+
+    .SHIP_BTN.locked {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: rgba(255, 255, 255, .3);
+      cursor: not-allowed;
+    }
+
+    .OWNED_BADGE {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: linear-gradient(135deg, #00aa55, #00ff88);
+      border-radius: 6px;
+      font-size: 6px;
+      color: #000;
+      font-weight: 700;
+      padding: 1px 5px;
+      letter-spacing: .5px;
+    }
+
+    .ACTIVE_BADGE {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      background: linear-gradient(135deg, #ff8800, #ffcc00);
+      border-radius: 6px;
+      font-size: 6px;
+      color: #000;
+      font-weight: 700;
+      padding: 1px 5px;
+      letter-spacing: .5px;
+    }
+
+    .UPG_TITLE {
+      font-size: 8px;
+      color: rgba(255, 200, 50, .5);
+      letter-spacing: 3px;
+      margin-bottom: 7px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .UPG_TITLE::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(255, 160, 0, .2), transparent);
+    }
+
+    .UPG_GRID {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .UPG_CARD {
+      background: linear-gradient(135deg, rgba(10, 15, 40, .95), rgba(5, 10, 25, .95));
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 10px;
+      padding: 9px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .UPG_CARD:hover:not(.maxed_c):not(.cant_c) {
+      border-color: rgba(0, 200, 255, .38);
+      background: linear-gradient(135deg, rgba(0, 30, 70, .95), rgba(0, 20, 50, .95));
+    }
+
+    .UPG_CARD.maxed_c {
+      border-color: rgba(0, 200, 100, .22);
+      cursor: default;
+    }
+
+    .UPG_CARD.cant_c {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    .UPG_ICON {
+      font-size: 18px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .UPG_NAME {
+      font-size: 8px;
+      color: #fff;
+      letter-spacing: .5px;
+      margin-bottom: 1px;
+    }
+
+    .UPG_DESC {
+      font-size: 6px;
+      color: rgba(255, 255, 255, .3);
+      margin-bottom: 5px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .UPG_LVLDOTS {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 5px;
+    }
+
+    .UDOT {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .UDOT.on {
+      background: #ffcc00;
+      border-color: #ff8800;
+      box-shadow: 0 0 3px #ff8800;
+    }
+
+    .UPG_COST {
+      font-size: 8px;
+      color: #ffee00;
+      letter-spacing: .5px;
+    }
+
+    .UPG_COST.maxed_c {
+      color: #00ff88;
+    }
+
+    .WEP_GRID {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .WEP_CARD {
+      background: linear-gradient(135deg, rgba(10, 15, 40, .95), rgba(5, 10, 25, .95));
+      border: 1px solid rgba(255, 0, 100, .08);
+      border-radius: 10px;
+      padding: 9px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .WEP_CARD:hover:not(.cant_c) {
+      border-color: rgba(255, 0, 100, .35);
+    }
+
+    .WEP_CARD.owned_w {
+      border-color: rgba(0, 200, 100, .22);
+    }
+
+    .WEP_CARD.active_w {
+      border-color: #ff0080;
+      background: rgba(255, 0, 80, .07);
+    }
+
+    .WEP_CARD.cant_c {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    .WEP_NAME {
+      font-size: 8px;
+      color: #fff;
+      letter-spacing: .5px;
+      margin-bottom: 1px;
+    }
+
+    .WEP_DESC {
+      font-size: 6px;
+      color: rgba(255, 255, 255, .28);
+      margin-bottom: 5px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+
+    .WEP_ICON_WRAP {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 5px;
+    }
+
+    .WEP_COST {
+      font-size: 8px;
+      letter-spacing: .5px;
+    }
+
+    #SHOP_BACK {
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    #SCR_PAUSE {
+      background: rgba(0, 0, 0, .85);
+      justify-content: center;
+    }
+
+    #SCR_PAUSE h2 {
+      font-size: 26px;
+      color: #ffcc00;
+      letter-spacing: 5px;
+      margin-bottom: 24px;
+      text-shadow: 0 0 15px #ff8800;
+    }
+
+    #SCR_OVER {
+      background: radial-gradient(ellipse at center, rgba(40, 0, 20, .98), rgba(2, 3, 12, .99));
+      justify-content: center;
+    }
+
+    #SCR_OVER h2 {
+      font-size: 30px;
+      font-weight: 900;
+      color: #ff0055;
+      text-shadow: 0 0 20px #ff0055;
+      letter-spacing: 4px;
+      margin-bottom: 22px;
+    }
+
+    .GO_STAT {
+      font-size: 10px;
+      color: rgba(255, 255, 255, .45);
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+
+    .GO_STAT span {
+      color: #fff;
+      font-size: 15px;
+    }
+
+    #GO_NEWBEST {
+      font-size: 10px;
+      color: #ffcc00;
+      letter-spacing: 3px;
+      margin-bottom: 14px;
+      display: none;
+      text-shadow: 0 0 8px #ff8800;
+    }
+
+    #SL {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 6;
+      pointer-events: none;
+      opacity: .018;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 200, 0, .4) 2px, rgba(255, 200, 0, .4) 4px);
+    }
+
+    #VIG {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 7;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, .55) 100%);
+    }
+
+    .COR {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .COR.tl {
+      top: 6px;
+      left: 6px;
+      border-top: 2px solid rgba(255, 160, 0, .4);
+      border-left: 2px solid rgba(255, 160, 0, .4);
+    }
+
+    .COR.tr {
+      top: 6px;
+      right: 6px;
+      border-top: 2px solid rgba(255, 160, 0, .4);
+      border-right: 2px solid rgba(255, 160, 0, .4);
+    }
+
+    .COR.bl {
+      bottom: 6px;
+      left: 6px;
+      border-bottom: 2px solid rgba(255, 160, 0, .4);
+      border-left: 2px solid rgba(255, 160, 0, .4);
+    }
+
+    .COR.br {
+      bottom: 6px;
+      right: 6px;
+      border-bottom: 2px solid rgba(255, 160, 0, .4);
+      border-right: 2px solid rgba(255, 160, 0, .4);
+    }
+
+    #FC {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 30;
+      pointer-events: none;
+    }
+
+    @media(max-width:440px) {
+      #GW {
+        width: 100vw;
+        height: 100vh;
+      }
+    }
+
+    @media(pointer:coarse) {
+      #DPAD {
+        display: flex;
+      }
+    }
+
+    /* ── COMBO ── */
+    #COMBO_HUD{position:absolute;top:76px;left:12px;z-index:15;pointer-events:none;opacity:0;transition:opacity .3s;}
+    #COMBO_HUD.show{opacity:1;}
+    #COMBO_NUM{font-size:22px;font-weight:900;color:#ffcc00;text-shadow:0 0 12px #ff8800;letter-spacing:2px;}
+    #COMBO_LABEL{font-size:7px;color:rgba(255,200,0,.5);letter-spacing:3px;}
+    /* ── LIVES ROW ── */
+    #HLIVES_ROW{display:flex;align-items:center;gap:5px;}
+    #HLIVES{display:flex;gap:3px;}
+    .hrt{font-size:14px;line-height:1;display:inline-block;transition:transform .15s;}
+    .hrt.lost{opacity:.2;transform:scale(.8);}
+    #HWAVE_BADGE{font-size:8px;color:#ff8800;letter-spacing:2px;background:rgba(255,140,0,.12);border:1px solid rgba(255,140,0,.25);border-radius:8px;padding:2px 7px;}
+    /* ── FULLSCREEN ── */
+    #FSBTN{position:absolute;top:9px;left:10px;z-index:15;background:rgba(0,0,0,.55);border:1px solid rgba(255,200,0,.18);color:rgba(255,200,0,.4);font-family:'Orbitron',monospace;font-size:10px;padding:4px 8px;cursor:pointer;border-radius:8px;transition:all .2s;}
+    #FSBTN:hover{color:#ffcc00;}
+    /* ── GAME OVER BEST ── */
+    #GO_NEWBEST{animation:nbPulse 1s ease-in-out infinite;}
+    @keyframes nbPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.7;transform:scale(1.05)}}
+  </style>
+</head>
+
+<body>
+  <div id="GW">
+    <canvas id="BG"></canvas>
+    <canvas id="GC"></canvas>
+    <div id="SL"></div>
+    <div id="VIG"></div>
+    <div class="COR tl"></div>
+    <div class="COR tr"></div>
+    <div class="COR bl"></div>
+    <div class="COR br"></div>
+    <div id="FC"></div>
+
+    <!-- HUD -->
+    <div id="HUD">
+      <div id="HUD_TOP">
+        <div class="HBOX">
+          <div class="HLB">SCORE</div>
+          <div class="HLV" id="HSC">0</div>
+        </div>
+        <div class="HBOX" style="align-items:center;gap:4px;">
+          <div id="HLIVES_ROW"><div id="HLIVES"></div><div id="HWAVE_BADGE">WAVE 1</div></div>
+        </div>
+        <div class="HBOX" style="align-items:flex-end">
+          <div class="HLB">COINS</div>
+          <div class="HLV" id="HCN">⬡ 0</div>
+        </div>
+      </div>
+      <div id="HXPBAR">
+        <div id="HXPFILL" style="width:0%"></div>
+      </div>
+      <div id="HHPBAR_WRAP"><span id="HHPLABEL">HULL</span>
+        <div id="HHPBAR">
+          <div id="HHPFILL"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Combo HUD -->
+    <div id="COMBO_HUD"><div id="COMBO_NUM">x2</div><div id="COMBO_LABEL">COMBO</div></div>
+    <div id="PUD"></div>
+    <div id="HWEPBADGE">
+      <div class="wbadge" id="WBADGE"
+        style="background:rgba(0,200,255,.15);border:1px solid rgba(0,200,255,.35);color:#00f5ff;"></div>
+    </div>
+    <button id="FSBTN">⛶</button>
+    <button id="PAUSEBTN">⏸ PAUSE</button>
+    <button id="SNDBTN">🔊</button>
+    <div id="WAVEBANNER">
+      <div id="WBTEXT">WAVE 1</div>
+      <div id="WBSUB">INCOMING</div>
+    </div>
+    <div id="BOSSWARN">
+      <div id="BWTEXT">⚠ BOSS APPROACHING ⚠</div>
+    </div>
+
+    <!-- ON-SCREEN D-PAD -->
+    <div id="DPAD">
+      <div class="DROW">
+        <div style="width:52px;height:52px;"></div>
+        <div class="DBTN" id="DB_UP" ontouchstart="dpadPress('up',true)" ontouchend="dpadPress('up',false)"
+          onmousedown="dpadPress('up',true)" onmouseup="dpadPress('up',false)">▲</div>
+        <div style="width:52px;height:52px;"></div>
+      </div>
+      <div class="DROW">
+        <div class="DBTN" id="DB_LEFT" ontouchstart="dpadPress('left',true)" ontouchend="dpadPress('left',false)"
+          onmousedown="dpadPress('left',true)" onmouseup="dpadPress('left',false)">◀</div>
+        <div class="DBTN mid" style="pointer-events:none;">✦</div>
+        <div class="DBTN" id="DB_RIGHT" ontouchstart="dpadPress('right',true)" ontouchend="dpadPress('right',false)"
+          onmousedown="dpadPress('right',true)" onmouseup="dpadPress('right',false)">▶</div>
+      </div>
+      <div class="DROW">
+        <div style="width:52px;height:52px;"></div>
+        <div class="DBTN" id="DB_DOWN" ontouchstart="dpadPress('down',true)" ontouchend="dpadPress('down',false)"
+          onmousedown="dpadPress('down',true)" onmouseup="dpadPress('down',false)">▼</div>
+        <div style="width:52px;height:52px;"></div>
+      </div>
+    </div>
+
+    <!-- TITLE SCREEN -->
+    <div class="SCR" id="SCR_TITLE">
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:20px;">
+        <div style="margin-bottom:16px;position:relative;">
+          <canvas id="TITLE_SHIP_CANVAS" width="120" height="140"></canvas>
+        </div>
+        <div class="TITLE_LOGO">GALACTIC<br><span>SURVIVAL</span></div>
+        <div class="TITLE_SUB">ENDLESS SPACE BATTLE</div>
+        <div class="TITLE_BTNS">
+          <button class="BTN_GOLD" id="BTN_START">▶ PLAY</button>
+          <button class="BTN_OUTLINE" id="BTN_TITLESHOP">🛒 HANGAR &amp; SHOP</button>
+        </div>
+        <div style="margin-top:16px;font-size:7px;color:rgba(255,160,0,.2);letter-spacing:2px;text-align:center;">WASD ·
+          ARROWS · TOUCH · D-PAD · AUTO FIRE</div>
+      </div>
+    </div>
+
+    <!-- SHOP SCREEN -->
+    <div class="SCR hidden" id="SCR_SHOP">
+      <div style="width:100%;padding:12px 12px 0;">
+        <div class="SHOP_HEADER">
+          <div class="SHOP_TITLE">⚙ HANGAR</div>
+          <div class="SHOP_COINS_BADGE">⬡ <span id="SHOP_COINS">0</span></div>
+        </div>
+        <div class="SHOP_TABS">
+          <div class="STAB active" id="TAB_SHIPS" onclick="switchTab('ships')">✈ SHIPS</div>
+          <div class="STAB" id="TAB_UPGRADES" onclick="switchTab('upgrades')">⬆ UPGRADES</div>
+          <div class="STAB" id="TAB_WEAPONS" onclick="switchTab('weapons')">🔫 WEAPONS</div>
+        </div>
+      </div>
+      <div style="width:100%;padding:0 12px;flex:1;overflow-y:auto;">
+        <div class="STAB_CONTENT active" id="TCONT_ships">
+          <div class="SHIP_GRID" id="SHIP_GRID"></div>
+        </div>
+        <div class="STAB_CONTENT" id="TCONT_upgrades">
+          <div id="UPG_CONTAINER"></div>
+        </div>
+        <div class="STAB_CONTENT" id="TCONT_weapons">
+          <div class="WEP_GRID" id="WEP_GRID"></div>
+        </div>
+      </div>
+      <div style="padding:0 12px;width:100%;"><button class="BTN_GOLD" id="SHOP_BACK" style="width:100%;padding:11px;">◀
+          BACK</button></div>
+    </div>
+
+    <!-- PAUSE SCREEN -->
+    <div class="SCR hidden" id="SCR_PAUSE">
+      <h2>PAUSED</h2>
+      <button class="BTN_GOLD" id="BTN_RESUME" style="margin-bottom:8px;">▶ RESUME</button>
+      <button class="BTN_OUTLINE" id="BTN_PAUSESHOP">🛒 HANGAR</button>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div class="SCR hidden" id="SCR_OVER">
+      <h2>SHIP DESTROYED</h2>
+      <div class="GO_STAT">SCORE  <span id="GO_SC">0</span></div>
+      <div class="GO_STAT">WAVE  <span id="GO_WV">1</span></div>
+      <div class="GO_STAT">BEST  <span id="GO_BEST">0</span></div>
+      <div class="GO_STAT">COINS  <span id="GO_CN">0</span></div>
+      <div id="GO_NEWBEST">★ NEW RECORD ★</div>
+      <button class="BTN_GOLD" id="BTN_RETRY" style="margin-top:18px;margin-bottom:8px;">↩ TRY AGAIN</button>
+      <button class="BTN_OUTLINE" id="BTN_OVERSHOP">🛒 HANGAR</button>
+    </div>
+  </div>
+
+  <script>
+    'use strict';
+
+    // ══════════════════════════════════════════
+    // CRAZYGAMES SDK v3 — immediate async IIFE (required for portal detection)
+    // ══════════════════════════════════════════
+    let cgSDK = null;
+    (async () => {
+      try {
+        if (typeof window.CrazyGames !== 'undefined' &&
+            window.CrazyGames !== null &&
+            typeof window.CrazyGames.SDK !== 'undefined') {
+          cgSDK = window.CrazyGames.SDK;
+          await cgSDK.init();
+          console.log('CrazyGames SDK v3 ready');
+        }
+      } catch (e) { console.warn('CG SDK init:', e); }
+    })();
+
+    function cgStart() { try { if (cgSDK) cgSDK.game.gameplayStart(); } catch(e){} }
+    function cgStop()  { try { if (cgSDK) cgSDK.game.gameplayStop();  } catch(e){} }
+    function cgAdBreak() {
+      try {
+        if (!cgSDK) return;
+        cgSDK.ad.requestAd('midgame', {
+          adStarted:  () => stopMusic(),
+          adFinished: () => { if (running && !paused) startMusic(); },
+          adError:    () => {}
+        });
+      } catch(e) {}
+    }
+    // ═══════════════ AUDIO ═══════════════
+    let AC = null, sndOn = true;
+    const getAC = () => { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); return AC; };
+    function snd(t) {
+      if (!sndOn) return; try {
+        const a = getAC(), g = a.createGain(), n = a.currentTime; g.connect(a.destination);
+        if (t === 'laser') { const o = a.createOscillator(); o.connect(g); o.type = 'square'; o.frequency.setValueAtTime(880, n); o.frequency.exponentialRampToValueAtTime(200, n + .08); g.gain.setValueAtTime(.07, n); g.gain.exponentialRampToValueAtTime(.001, n + .09); o.start(n); o.stop(n + .09); }
+        else if (t === 'plasma') { const o = a.createOscillator(); o.connect(g); o.type = 'sawtooth'; o.frequency.setValueAtTime(180, n); o.frequency.exponentialRampToValueAtTime(55, n + .2); g.gain.setValueAtTime(.11, n); g.gain.exponentialRampToValueAtTime(.001, n + .22); o.start(n); o.stop(n + .22); }
+        else if (t === 'missile') { const o = a.createOscillator(); o.connect(g); o.type = 'sawtooth'; o.frequency.setValueAtTime(380, n); o.frequency.linearRampToValueAtTime(580, n + .05); o.frequency.exponentialRampToValueAtTime(90, n + .18); g.gain.setValueAtTime(.09, n); g.gain.exponentialRampToValueAtTime(.001, n + .2); o.start(n); o.stop(n + .2); }
+        else if (t === 'xs') { const b = a.createBuffer(1, a.sampleRate * .18, a.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++)d[i] = (Math.random() * 2 - 1) * (1 - i / d.length); const s = a.createBufferSource(); s.buffer = b; const f = a.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 600; s.connect(f); f.connect(g); g.gain.setValueAtTime(.22, n); g.gain.exponentialRampToValueAtTime(.001, n + .18); s.start(n); s.stop(n + .18); }
+        else if (t === 'xb') { const b = a.createBuffer(1, a.sampleRate * .6, a.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++)d[i] = (Math.random() * 2 - 1) * (1 - i / d.length) * .9; const s = a.createBufferSource(); s.buffer = b; const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 280; s.connect(f); f.connect(g); g.gain.setValueAtTime(.45, n); g.gain.exponentialRampToValueAtTime(.001, n + .6); s.start(n); s.stop(n + .6); }
+        else if (t === 'hit') { const o = a.createOscillator(); o.connect(g); o.type = 'sine'; o.frequency.setValueAtTime(140, n); o.frequency.exponentialRampToValueAtTime(55, n + .1); g.gain.setValueAtTime(.18, n); g.gain.exponentialRampToValueAtTime(.001, n + .12); o.start(n); o.stop(n + .12); }
+        else if (t === 'coin') { const o = a.createOscillator(); o.connect(g); o.type = 'sine'; o.frequency.setValueAtTime(1200, n); o.frequency.exponentialRampToValueAtTime(1600, n + .05); g.gain.setValueAtTime(.055, n); g.gain.exponentialRampToValueAtTime(.001, n + .07); o.start(n); o.stop(n + .07); }
+        else if (t === 'pu') { [440, 550, 660, 880].forEach((fr, i) => { const o = a.createOscillator(), gg = a.createGain(); o.connect(gg); gg.connect(a.destination); o.type = 'sine'; o.frequency.value = fr; const tt = n + i * .06; gg.gain.setValueAtTime(0, tt); gg.gain.linearRampToValueAtTime(.12, tt + .03); gg.gain.exponentialRampToValueAtTime(.001, tt + .1); o.start(tt); o.stop(tt + .12); }); }
+        else if (t === 'bw') { [200, 250, 200, 250, 320].forEach((fr, i) => { const o = a.createOscillator(), gg = a.createGain(); o.connect(gg); gg.connect(a.destination); o.type = 'square'; o.frequency.value = fr; const tt = n + i * .18; gg.gain.setValueAtTime(.15, tt); gg.gain.exponentialRampToValueAtTime(.001, tt + .14); o.start(tt); o.stop(tt + .15); }); }
+        else if (t === 'wave') { [330, 440, 550, 660].forEach((fr, i) => { const o = a.createOscillator(), gg = a.createGain(); o.connect(gg); gg.connect(a.destination); o.type = 'triangle'; o.frequency.value = fr; const tt = n + i * .07; gg.gain.setValueAtTime(.09, tt); gg.gain.exponentialRampToValueAtTime(.001, tt + .14); o.start(tt); o.stop(tt + .15); }); }
+      } catch (e) { }
+    }
+    let MN = null;
+    function startMusic() { if (!sndOn) return; try { stopMusic(); const a = getAC(); MN = []; const bass = a.createOscillator(), bg = a.createGain(); bass.connect(bg); bg.connect(a.destination); bass.type = 'sawtooth'; bass.frequency.value = 55; bg.gain.value = .03; const arp = a.createOscillator(), ag = a.createGain(), af = a.createBiquadFilter(); arp.connect(af); af.connect(ag); ag.connect(a.destination); arp.type = 'square'; af.type = 'lowpass'; af.frequency.value = 1100; ag.gain.value = .016; const notes = [220, 277, 330, 370, 440, 370, 330, 277]; let ni = 0; const tick = () => { if (!sndOn) return; arp.frequency.setValueAtTime(notes[ni % notes.length], a.currentTime); ni++; }; tick(); MN._int = setInterval(tick, 165); bass.start(); arp.start(); MN = [bass, bg, arp, ag, af]; } catch (e) { } }
+    function stopMusic() { if (MN) { clearInterval(MN._int); MN.forEach(n => { try { if (n.stop) n.stop(); n.disconnect(); } catch (e) { } }); MN = null; } }
+
+    // ═══════════════ CANVAS ═══════════════
+    const GW = document.getElementById('GW');
+    const bgC = document.getElementById('BG'), bgX = bgC.getContext('2d');
+    const cv = document.getElementById('GC'), cx = cv.getContext('2d');
+    let W, H;
+    function resize() { W = GW.offsetWidth; H = GW.offsetHeight; bgC.width = cv.width = W; bgC.height = cv.height = H; }
+    resize();
+
+    // ═══════════════ SHIP SVG IMAGES FOR SHOP ═══════════════
+    // Each ship has a rich SVG art for the shop card display
+    const SHIP_SVGS = {
+      viper: `<svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg" width="80" height="90">
+    <defs>
+      <radialGradient id="vg1" cx="50%" cy="40%"><stop offset="0%" stop-color="#00eeff"/><stop offset="100%" stop-color="#003366"/></radialGradient>
+      <radialGradient id="vg2" cx="50%" cy="50%"><stop offset="0%" stop-color="#aaffff" stop-opacity=".7"/><stop offset="100%" stop-color="#00ccff" stop-opacity="0"/></radialGradient>
+      <filter id="vglow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <!-- Engine flames -->
+    <ellipse cx="35" cy="79" rx="5" ry="10" fill="url(#vg2)" opacity=".9"/>
+    <ellipse cx="45" cy="79" rx="5" ry="10" fill="url(#vg2)" opacity=".9"/>
+    <ellipse cx="26" cy="74" rx="3" ry="7" fill="#0099ff" opacity=".6"/>
+    <ellipse cx="54" cy="74" rx="3" ry="7" fill="#0099ff" opacity=".6"/>
+    <!-- Wings -->
+    <polygon points="40,18 14,52 18,64 30,58 38,42" fill="#002244" stroke="#00ccff" stroke-width="1.2"/>
+    <polygon points="40,18 66,52 62,64 50,58 42,42" fill="#002244" stroke="#00ccff" stroke-width="1.2"/>
+    <!-- Wing accent lines -->
+    <line x1="20" y1="48" x2="30" y2="56" stroke="#00eeff" stroke-width=".8" opacity=".6"/>
+    <line x1="60" y1="48" x2="50" y2="56" stroke="#00eeff" stroke-width=".8" opacity=".6"/>
+    <!-- Body -->
+    <polygon points="40,4 52,38 50,68 30,68 28,38" fill="#001833" stroke="#00ccff" stroke-width="1.4" filter="url(#vglow)"/>
+    <!-- Body detail lines -->
+    <line x1="40" y1="16" x2="47" y2="38" stroke="#00ccff" stroke-width=".7" opacity=".3"/>
+    <line x1="40" y1="16" x2="33" y2="38" stroke="#00ccff" stroke-width=".7" opacity=".3"/>
+    <!-- Cockpit -->
+    <ellipse cx="40" cy="28" rx="6" ry="10" fill="#002855" stroke="#00eeff" stroke-width="1"/>
+    <ellipse cx="38" cy="24" rx="2.5" ry="4" fill="rgba(180,255,255,.35)"/>
+    <!-- Nose -->
+    <circle cx="40" cy="4" r="3" fill="#00eeff" filter="url(#vglow)"/>
+    <!-- Engine ports -->
+    <circle cx="33" cy="67" r="3" fill="#00aaff" opacity=".9"/>
+    <circle cx="40" cy="68" r="3" fill="#00aaff" opacity=".9"/>
+    <circle cx="47" cy="67" r="3" fill="#00aaff" opacity=".9"/>
+    <!-- Wing gun nubs -->
+    <rect x="11" y="55" width="5" height="9" rx="2" fill="#ff4400"/>
+    <rect x="64" y="55" width="5" height="9" rx="2" fill="#ff4400"/>
+  </svg>`,
+
+      falcon: `<svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg" width="80" height="90">
+    <defs>
+      <radialGradient id="fg1" cx="50%" cy="40%"><stop offset="0%" stop-color="#00ff99"/><stop offset="100%" stop-color="#003322"/></radialGradient>
+      <radialGradient id="fg2" cx="50%" cy="30%"><stop offset="0%" stop-color="#aaffcc" stop-opacity=".8"/><stop offset="100%" stop-color="#00ff88" stop-opacity="0"/></radialGradient>
+      <filter id="fglow"><feGaussianBlur stdDeviation="2"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <!-- Dual engine flames -->
+    <ellipse cx="33" cy="78" rx="5" ry="12" fill="url(#fg2)" opacity=".95"/>
+    <ellipse cx="47" cy="78" rx="5" ry="12" fill="url(#fg2)" opacity=".95"/>
+    <!-- Canard fins (front small wings) -->
+    <polygon points="40,12 26,22 28,28 38,22" fill="#002211" stroke="#00ff88" stroke-width="1"/>
+    <polygon points="40,12 54,22 52,28 42,22" fill="#002211" stroke="#00ff88" stroke-width="1"/>
+    <!-- Main swept wings -->
+    <polygon points="38,20 8,48 12,62 28,56 36,38" fill="#001a0d" stroke="#00ff88" stroke-width="1.2"/>
+    <polygon points="42,20 72,48 68,62 52,56 44,38" fill="#001a0d" stroke="#00ff88" stroke-width="1.2"/>
+    <!-- Wing stripes -->
+    <line x1="14" y1="44" x2="24" y2="54" stroke="#ffcc00" stroke-width="1" opacity=".5"/>
+    <line x1="66" y1="44" x2="56" y2="54" stroke="#ffcc00" stroke-width="1" opacity=".5"/>
+    <!-- Body slim -->
+    <polygon points="40,4 50,32 48,66 32,66 30,32" fill="#001408" stroke="#00ff88" stroke-width="1.4" filter="url(#fglow)"/>
+    <!-- Speed lines on body -->
+    <line x1="40" y1="14" x2="45" y2="34" stroke="#00ff88" stroke-width=".6" opacity=".35"/>
+    <line x1="40" y1="14" x2="35" y2="34" stroke="#00ff88" stroke-width=".6" opacity=".35"/>
+    <!-- Cockpit -->
+    <ellipse cx="40" cy="26" rx="5" ry="9" fill="#002211" stroke="#00ff88" stroke-width=".9"/>
+    <ellipse cx="38.5" cy="22" rx="2" ry="3.5" fill="rgba(150,255,200,.35)"/>
+    <!-- Nose -->
+    <circle cx="40" cy="4" r="2.5" fill="#00ff88" filter="url(#fglow)"/>
+    <!-- Engine glow rings -->
+    <circle cx="33" cy="66" r="4" fill="#00ff88" opacity=".8"/>
+    <circle cx="47" cy="66" r="4" fill="#00ff88" opacity=".8"/>
+    <circle cx="33" cy="66" r="2" fill="#aaffcc"/>
+    <circle cx="47" cy="66" r="2" fill="#aaffcc"/>
+  </svg>`,
+
+      titan: `<svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg" width="80" height="90">
+    <defs>
+      <radialGradient id="tg1" cx="50%" cy="40%"><stop offset="0%" stop-color="#cc55ff"/><stop offset="100%" stop-color="#220033"/></radialGradient>
+      <radialGradient id="tg2" cx="50%" cy="30%"><stop offset="0%" stop-color="#ee99ff" stop-opacity=".9"/><stop offset="100%" stop-color="#aa00ff" stop-opacity="0"/></radialGradient>
+      <filter id="tglow"><feGaussianBlur stdDeviation="2.5"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <!-- Triple engine flames -->
+    <ellipse cx="28" cy="80" rx="5" ry="11" fill="url(#tg2)" opacity=".9"/>
+    <ellipse cx="40" cy="82" rx="5" ry="12" fill="url(#tg2)" opacity=".95"/>
+    <ellipse cx="52" cy="80" rx="5" ry="11" fill="url(#tg2)" opacity=".9"/>
+    <!-- Heavy outer wings -->
+    <polygon points="38,10 6,32 4,52 16,58 22,50 28,38" fill="#18003a" stroke="#aa44ff" stroke-width="1.3"/>
+    <polygon points="42,10 74,32 76,52 64,58 58,50 52,38" fill="#18003a" stroke="#aa44ff" stroke-width="1.3"/>
+    <!-- Wing cannons -->
+    <rect x="2" y="48" width="6" height="16" rx="2" fill="#ff0080"/>
+    <rect x="72" y="48" width="6" height="16" rx="2" fill="#ff0080"/>
+    <circle cx="5" cy="64" r="3.5" fill="#ff3399" opacity=".9"/>
+    <circle cx="75" cy="64" r="3.5" fill="#ff3399" opacity=".9"/>
+    <!-- Armor plate details -->
+    <line x1="10" y1="36" x2="20" y2="50" stroke="#cc66ff" stroke-width=".8" opacity=".4"/>
+    <line x1="70" y1="36" x2="60" y2="50" stroke="#cc66ff" stroke-width=".8" opacity=".4"/>
+    <!-- Main body wide -->
+    <polygon points="40,4 56,14 58,70 22,70 24,14" fill="#110028" stroke="#aa44ff" stroke-width="1.6" filter="url(#tglow)"/>
+    <!-- Armor cross-plates -->
+    <line x1="28" y1="30" x2="52" y2="30" stroke="#cc66ff" stroke-width=".9" opacity=".35"/>
+    <line x1="26" y1="46" x2="54" y2="46" stroke="#cc66ff" stroke-width=".9" opacity=".35"/>
+    <line x1="28" y1="16" x2="28" y2="50" stroke="#cc66ff" stroke-width=".7" opacity=".3"/>
+    <line x1="52" y1="16" x2="52" y2="50" stroke="#cc66ff" stroke-width=".7" opacity=".3"/>
+    <!-- Cockpit large -->
+    <ellipse cx="40" cy="24" rx="8" ry="13" fill="#1a0035" stroke="#cc66ff" stroke-width="1.1"/>
+    <ellipse cx="37.5" cy="19" rx="3.5" ry="5.5" fill="rgba(220,150,255,.3)"/>
+    <!-- Nose -->
+    <circle cx="40" cy="4" r="3.5" fill="#cc44ff" filter="url(#tglow)"/>
+    <!-- Engine ports row -->
+    <circle cx="28" cy="70" r="4" fill="#aa44ff" opacity=".85"/>
+    <circle cx="40" cy="71" r="4.5" fill="#aa44ff" opacity=".9"/>
+    <circle cx="52" cy="70" r="4" fill="#aa44ff" opacity=".85"/>
+  </svg>`,
+
+      phoenix: `<svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg" width="80" height="90">
+    <defs>
+      <radialGradient id="phg1" cx="50%" cy="40%"><stop offset="0%" stop-color="#ff7700"/><stop offset="100%" stop-color="#330800"/></radialGradient>
+      <radialGradient id="phg2" cx="50%" cy="30%"><stop offset="0%" stop-color="#ffdd44" stop-opacity=".95"/><stop offset="100%" stop-color="#ff5500" stop-opacity="0"/></radialGradient>
+      <filter id="phglow"><feGaussianBlur stdDeviation="2"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <!-- Fire engine plumes -->
+    <ellipse cx="34" cy="80" rx="6" ry="13" fill="url(#phg2)" opacity=".95"/>
+    <ellipse cx="46" cy="80" rx="6" ry="13" fill="url(#phg2)" opacity=".95"/>
+    <ellipse cx="27" cy="75" rx="4" ry="9" fill="#ff4400" opacity=".6"/>
+    <ellipse cx="53" cy="75" rx="4" ry="9" fill="#ff4400" opacity=".6"/>
+    <!-- Phoenix swept wings with feather tips -->
+    <polygon points="38,16 6,44 8,58 22,54 30,44 36,30" fill="#260800" stroke="#ff6600" stroke-width="1.2"/>
+    <polygon points="42,16 74,44 72,58 58,54 50,44 44,30" fill="#260800" stroke="#ff6600" stroke-width="1.2"/>
+    <!-- Flame wing accents -->
+    <line x1="10" y1="40" x2="22" y2="52" stroke="#ffaa00" stroke-width="1" opacity=".55"/>
+    <line x1="70" y1="40" x2="58" y2="52" stroke="#ffaa00" stroke-width="1" opacity=".55"/>
+    <line x1="14" y1="50" x2="20" y2="56" stroke="#ffcc00" stroke-width=".8" opacity=".4"/>
+    <line x1="66" y1="50" x2="60" y2="56" stroke="#ffcc00" stroke-width=".8" opacity=".4"/>
+    <!-- Body -->
+    <polygon points="40,4 52,30 50,68 30,68 28,30" fill="#1c0400" stroke="#ff6600" stroke-width="1.4" filter="url(#phglow)"/>
+    <!-- Fire body stripes -->
+    <line x1="36" y1="22" x2="34" y2="48" stroke="#ff8800" stroke-width=".8" opacity=".4"/>
+    <line x1="44" y1="22" x2="46" y2="48" stroke="#ff8800" stroke-width=".8" opacity=".4"/>
+    <!-- Cockpit -->
+    <ellipse cx="40" cy="26" rx="6" ry="10" fill="#220600" stroke="#ff8800" stroke-width="1"/>
+    <ellipse cx="38.5" cy="22" rx="2.5" ry="4" fill="rgba(255,220,100,.3)"/>
+    <!-- Nose point -->
+    <circle cx="40" cy="4" r="2.5" fill="#ff8800" filter="url(#phglow)"/>
+    <!-- Phoenix eye (logo center piece) -->
+    <circle cx="40" cy="38" r="5" fill="#ff4400" opacity=".5" filter="url(#phglow)"/>
+    <circle cx="40" cy="38" r="2.5" fill="#ffcc00"/>
+    <!-- Engine ports -->
+    <circle cx="34" cy="68" r="4.5" fill="#ff6600" opacity=".9"/>
+    <circle cx="46" cy="68" r="4.5" fill="#ff6600" opacity=".9"/>
+  </svg>`,
+
+      spectre: `<svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg" width="80" height="90">
+    <defs>
+      <radialGradient id="sg1" cx="50%" cy="40%"><stop offset="0%" stop-color="#cc00ff"/><stop offset="100%" stop-color="#0a0022"/></radialGradient>
+      <radialGradient id="sg2" cx="50%" cy="30%"><stop offset="0%" stop-color="#ee88ff" stop-opacity=".9"/><stop offset="100%" stop-color="#aa00ff" stop-opacity="0"/></radialGradient>
+      <radialGradient id="sg3" cx="50%" cy="50%"><stop offset="0%" stop-color="#00ffff" stop-opacity=".8"/><stop offset="100%" stop-color="#00aaff" stop-opacity="0"/></radialGradient>
+      <filter id="sglow"><feGaussianBlur stdDeviation="2"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <!-- Stealth engine glow -->
+    <ellipse cx="36" cy="79" rx="5" ry="11" fill="url(#sg2)" opacity=".9"/>
+    <ellipse cx="44" cy="79" rx="5" ry="11" fill="url(#sg2)" opacity=".9"/>
+    <!-- Broad delta wings (stealth B-2 style) -->
+    <polygon points="40,8 4,52 10,64 26,60 34,44 38,28" fill="#0e0022" stroke="#cc00ff" stroke-width="1.2"/>
+    <polygon points="40,8 76,52 70,64 54,60 46,44 42,28" fill="#0e0022" stroke="#cc00ff" stroke-width="1.2"/>
+    <!-- Stealth edge highlights -->
+    <line x1="6" y1="50" x2="22" y2="58" stroke="#00ffff" stroke-width=".8" opacity=".45"/>
+    <line x1="74" y1="50" x2="58" y2="58" stroke="#00ffff" stroke-width=".8" opacity=".45"/>
+    <!-- Wing inner bevel -->
+    <polygon points="40,14 18,50 22,58 32,52 38,34" fill="rgba(150,0,255,.08)" stroke="#9900ff" stroke-width=".7"/>
+    <polygon points="40,14 62,50 58,58 48,52 42,34" fill="rgba(150,0,255,.08)" stroke="#9900ff" stroke-width=".7"/>
+    <!-- Slim body -->
+    <polygon points="40,4 48,26 46,66 34,66 32,26" fill="#08001a" stroke="#cc00ff" stroke-width="1.4" filter="url(#sglow)"/>
+    <!-- Crystal cockpit (teal) -->
+    <ellipse cx="40" cy="24" rx="5" ry="9" fill="#0a0028" stroke="#00eeff" stroke-width="1.1"/>
+    <ellipse cx="38.5" cy="20" rx="2" ry="3.5" fill="rgba(0,255,255,.35)"/>
+    <!-- Energy rings around body -->
+    <ellipse cx="40" cy="44" rx="14" ry="5" fill="none" stroke="#cc00ff" stroke-width=".7" opacity=".35"/>
+    <ellipse cx="40" cy="52" rx="16" ry="6" fill="none" stroke="#9900ff" stroke-width=".6" opacity=".25"/>
+    <!-- Nose -->
+    <circle cx="40" cy="4" r="2.5" fill="#cc00ff" filter="url(#sglow)"/>
+    <!-- Engine stealth glow -->
+    <circle cx="36" cy="66" r="3.5" fill="#aa00ff" opacity=".85"/>
+    <circle cx="44" cy="66" r="3.5" fill="#aa00ff" opacity=".85"/>
+    <circle cx="36" cy="66" r="1.5" fill="#00ffff"/>
+    <circle cx="44" cy="66" r="1.5" fill="#00ffff"/>
+    <!-- Stealth panels -->
+    <line x1="34" y1="28" x2="34" y2="52" stroke="#cc00ff" stroke-width=".6" opacity=".3"/>
+    <line x1="46" y1="28" x2="46" y2="52" stroke="#cc00ff" stroke-width=".6" opacity=".3"/>
+  </svg>`
+    };
+
+    // Weapon SVGs for shop
+    const WEP_SVGS = {
+      laser: `<svg viewBox="0 0 60 38" width="55" height="35">
+    <defs><linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ffff" stop-opacity="0"/><stop offset="50%" stop-color="#00ffff"/><stop offset="100%" stop-color="#00ffff" stop-opacity="0"/></linearGradient></defs>
+    <rect x="5" y="17" width="50" height="4" rx="2" fill="url(#lg1)"/>
+    <rect x="5" y="18.5" width="50" height="1" rx=".5" fill="#ffffff" opacity=".8"/>
+    <circle cx="8" cy="19" r="4" fill="#00ffff" opacity=".4"/>
+    <circle cx="52" cy="19" r="5" fill="#00ffff" opacity=".6"/>
+    <circle cx="52" cy="19" r="2.5" fill="#ffffff"/>
+  </svg>`,
+      dual: `<svg viewBox="0 0 60 38" width="55" height="35">
+    <defs><linearGradient id="dg1" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ff88" stop-opacity="0"/><stop offset="50%" stop-color="#00ff88"/><stop offset="100%" stop-color="#00ff88" stop-opacity="0"/></linearGradient></defs>
+    <rect x="5" y="10" width="50" height="3.5" rx="1.5" fill="url(#dg1)"/>
+    <rect x="5" y="24.5" width="50" height="3.5" rx="1.5" fill="url(#dg1)"/>
+    <circle cx="52" cy="11.7" r="4" fill="#00ff88" opacity=".6"/>
+    <circle cx="52" cy="26.2" r="4" fill="#00ff88" opacity=".6"/>
+    <circle cx="52" cy="11.7" r="2" fill="#ffffff"/>
+    <circle cx="52" cy="26.2" r="2" fill="#ffffff"/>
+  </svg>`,
+      spread: `<svg viewBox="0 0 60 38" width="55" height="35">
+    <line x1="5" y1="19" x2="55" y2="19" stroke="#ffcc00" stroke-width="3" stroke-linecap="round"/>
+    <line x1="5" y1="19" x2="52" y2="8" stroke="#ffcc00" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+    <line x1="5" y1="19" x2="52" y2="30" stroke="#ffcc00" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+    <circle cx="55" cy="19" r="3.5" fill="#ffcc00"/><circle cx="52" cy="8" r="3" fill="#ffcc00" opacity=".8"/><circle cx="52" cy="30" r="3" fill="#ffcc00" opacity=".8"/>
+    <circle cx="5" cy="19" r="5" fill="#ffcc00" opacity=".3"/>
+  </svg>`,
+      plasma: `<svg viewBox="0 0 60 38" width="55" height="35">
+    <defs><radialGradient id="pg1"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#dd00ff"/><stop offset="100%" stop-color="#440088" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="50" cy="19" rx="12" ry="12" fill="url(#pg1)"/>
+    <line x1="5" y1="19" x2="42" y2="19" stroke="#cc00ff" stroke-width="3" stroke-linecap="round" opacity=".6"/>
+    <circle cx="50" cy="19" r="5" fill="#ffffff"/>
+  </svg>`,
+      missile: `<svg viewBox="0 0 60 38" width="55" height="35">
+    <polygon points="52,19 42,13 42,25" fill="#ff5500"/>
+    <rect x="12" y="15" width="30" height="8" rx="3" fill="#cc3300"/>
+    <rect x="8" y="17" width="6" height="4" rx="1" fill="#ff7744"/>
+    <polygon points="12,15 6,10 8,15" fill="#ff5500"/><polygon points="12,23 6,28 8,23" fill="#ff5500"/>
+    <ellipse cx="10" cy="19" rx="6" ry="4" fill="#ff8844" opacity=".6"/>
+    <line x1="5" y1="14" x2="12" y2="17" stroke="#ffcc00" stroke-width="1.5"/><line x1="5" y1="24" x2="12" y2="21" stroke="#ffcc00" stroke-width="1.5"/>
+  </svg>`
+    };
+
+    // ═══════════════ SHIP DEFINITIONS ═══════════════
+    const SHIPS = {
+      viper: { id: 'viper', name: 'Viper', class: 'ASSAULT', cost: 0, color: '#00ccff', accentColor: '#ff4400', baseHP: 100, baseDMG: 10, baseSPD: 280, baseFR: .17, stats: { hp: 5, dmg: 4, spd: 6, fr: 5 }, desc: 'Balanced starter ship' },
+      falcon: { id: 'falcon', name: 'Falcon', class: 'SPEED', cost: 500, color: '#00ff88', accentColor: '#ffcc00', baseHP: 80, baseDMG: 12, baseSPD: 350, baseFR: .14, stats: { hp: 4, dmg: 5, spd: 9, fr: 6 }, desc: 'Lightning fast interceptor' },
+      titan: { id: 'titan', name: 'Titan', class: 'HEAVY', cost: 1200, color: '#aa44ff', accentColor: '#ff0080', baseHP: 180, baseDMG: 18, baseSPD: 200, baseFR: .22, stats: { hp: 9, dmg: 8, spd: 3, fr: 4 }, desc: 'Armored heavy gunship' },
+      phoenix: { id: 'phoenix', name: 'Phoenix', class: 'FIRE', cost: 2500, color: '#ff6600', accentColor: '#ffee00', baseHP: 130, baseDMG: 22, baseSPD: 260, baseFR: .15, stats: { hp: 6, dmg: 9, spd: 5, fr: 7 }, desc: 'Incendiary attack craft' },
+      spectre: { id: 'spectre', name: 'Spectre', class: 'STEALTH', cost: 5000, color: '#cc00ff', accentColor: '#00ffff', baseHP: 110, baseDMG: 28, baseSPD: 300, baseFR: .12, stats: { hp: 5, dmg: 10, spd: 7, fr: 8 }, desc: 'Elite stealth destroyer' },
+    };
+
+    // ═══════════════ GAME STATE ═══════════════
+    const GS = {
+      coins: 0, best: 0,
+      ownedShips: ['viper'], activeShip: 'viper',
+      shipUpgrades: { viper: { hp: 0, dmg: 0, spd: 0, fr: 0 }, falcon: { hp: 0, dmg: 0, spd: 0, fr: 0 }, titan: { hp: 0, dmg: 0, spd: 0, fr: 0 }, phoenix: { hp: 0, dmg: 0, spd: 0, fr: 0 }, spectre: { hp: 0, dmg: 0, spd: 0, fr: 0 } },
+      ownedWeapons: ['laser'], weapon: 'laser'
+    };
+    const UPGRADES = [
+      { key: 'hp', name: 'Armor Plating', desc: 'Increase max hull HP', icon: '🛡', max: 5, costPer: [100, 200, 380, 600, 900] },
+      { key: 'dmg', name: 'Weapon Core', desc: 'Boost bullet damage', icon: '⚡', max: 5, costPer: [120, 220, 400, 650, 1000] },
+      { key: 'spd', name: 'Ion Thrusters', desc: 'Increase move speed', icon: '🚀', max: 5, costPer: [80, 160, 300, 500, 750] },
+      { key: 'fr', name: 'Fire Control', desc: 'Increase fire rate', icon: '🔥', max: 5, costPer: [100, 180, 350, 580, 850] },
+    ];
+    const WEAPONS = {
+      laser: { name: 'Laser', desc: 'Rapid energy beam', cost: 0, col: '#00f5ff' },
+      dual: { name: 'Dual Laser', desc: 'Two parallel beams', cost: 250, col: '#00ff88' },
+      spread: { name: 'Spread Shot', desc: '3-way spread fire', cost: 370, col: '#ffcc00' },
+      plasma: { name: 'Plasma Canon', desc: 'Heavy plasma orb', cost: 520, col: '#cc00ff' },
+      missile: { name: 'Missiles', desc: 'Homing warheads', cost: 1200, col: '#ff5500' },
+    };
+
+    // ═══════════════ SHIP DRAWING (canvas game graphics) ═══════════════
+    function drawShipOnCtx(c, shipId, x, y, scale = 1, thrustAnim = 0) {
+      if (!SHIPS[shipId]) return;
+      const ship = SHIPS[shipId]; const col = ship.color, acc = ship.accentColor;
+      c.save(); c.translate(x, y); c.scale(scale, scale);
+      const glow = (color, r) => { c.shadowBlur = r; c.shadowColor = color; };
+      if (shipId === 'viper') {
+        const fl = 8 + Math.sin(thrustAnim) * 4;
+        const tg = c.createLinearGradient(0, 18, 0, 18 + fl * 2.5); tg.addColorStop(0, 'rgba(80,220,255,.9)'); tg.addColorStop(.5, 'rgba(0,100,255,.5)'); tg.addColorStop(1, 'rgba(0,0,200,0)');
+        c.beginPath(); c.moveTo(-7, 18); c.quadraticCurveTo(0, 18 + fl * 2.5, 7, 18); c.fillStyle = tg; c.fill();
+        [-11, 11].forEach(nx => { const tg2 = c.createLinearGradient(nx, 14, nx, 14 + fl * 1.8); tg2.addColorStop(0, 'rgba(0,200,255,.8)'); tg2.addColorStop(1, 'rgba(0,0,200,0)'); c.beginPath(); c.moveTo(nx - 3, 13); c.quadraticCurveTo(nx, 14 + fl * 1.8, nx + 3, 13); c.fillStyle = tg2; c.fill(); });
+        glow(col, 10); c.fillStyle = 'rgba(0,40,90,.95)'; c.strokeStyle = col; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(-8, 4); c.lineTo(-24, 16); c.lineTo(-20, 22); c.lineTo(-10, 18); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(8, 4); c.lineTo(24, 16); c.lineTo(20, 22); c.lineTo(10, 18); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = acc; c.lineWidth = .8; c.globalAlpha = .6; c.beginPath(); c.moveTo(-12, 10); c.lineTo(-22, 18); c.stroke(); c.beginPath(); c.moveTo(12, 10); c.lineTo(22, 18); c.stroke(); c.globalAlpha = 1;
+        glow(col, 14); c.fillStyle = 'rgba(0,25,60,.95)'; c.strokeStyle = col; c.lineWidth = 1.2;
+        c.beginPath(); c.moveTo(0, -24); c.lineTo(10, 8); c.lineTo(8, 22); c.lineTo(-8, 22); c.lineTo(-10, 8); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = `rgba(0,200,255,.2)`; c.lineWidth = .7; c.beginPath(); c.moveTo(0, -14); c.lineTo(7, 8); c.stroke(); c.beginPath(); c.moveTo(0, -14); c.lineTo(-7, 8); c.stroke();
+        glow(col, 8); c.fillStyle = 'rgba(0,200,255,.25)'; c.strokeStyle = col; c.lineWidth = 1; c.beginPath(); c.ellipse(0, -8, 5, 8, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(255,255,255,.3)'; c.beginPath(); c.ellipse(-1.5, -11, 2, 3.5, .3, 0, Math.PI * 2); c.fill();
+        c.fillStyle = col; glow(col, 6); c.beginPath(); c.arc(0, -24, 2, 0, Math.PI * 2); c.fill();
+        [-8, 0, 8].forEach(ex => { c.fillStyle = `rgba(0,200,255,${.7 + .3 * Math.sin(thrustAnim + ex * .2)})`; glow(col, 5); c.beginPath(); c.arc(ex, 22, 2, 0, Math.PI * 2); c.fill(); });
+      } else if (shipId === 'falcon') {
+        const fl = 7 + Math.sin(thrustAnim) * 4;
+        [-9, 9].forEach(ex => { const tg2 = c.createLinearGradient(ex, 16, ex, 16 + fl * 2.2); tg2.addColorStop(0, 'rgba(0,255,120,.9)'); tg2.addColorStop(1, 'rgba(0,200,50,0)'); c.beginPath(); c.moveTo(ex - 4, 15); c.quadraticCurveTo(ex, 16 + fl * 2.2, ex + 4, 15); c.fillStyle = tg2; c.fill(); });
+        glow(col, 10); c.fillStyle = 'rgba(0,35,25,.95)'; c.strokeStyle = col; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(-5, 0); c.lineTo(-26, 12); c.lineTo(-24, 18); c.lineTo(-7, 14); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(5, 0); c.lineTo(26, 12); c.lineTo(24, 18); c.lineTo(7, 14); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(-4, -14); c.lineTo(-14, -8); c.lineTo(-12, -4); c.lineTo(-4, -8); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(4, -14); c.lineTo(14, -8); c.lineTo(12, -4); c.lineTo(4, -8); c.closePath(); c.fill(); c.stroke();
+        glow(col, 12); c.fillStyle = 'rgba(0,28,20,.95)'; c.strokeStyle = col; c.lineWidth = 1.2;
+        c.beginPath(); c.moveTo(0, -22); c.lineTo(7, 2); c.lineTo(9, 16); c.lineTo(-9, 16); c.lineTo(-7, 2); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = acc; c.lineWidth = .8; c.globalAlpha = .5; c.beginPath(); c.moveTo(0, -12); c.lineTo(5, 8); c.stroke(); c.beginPath(); c.moveTo(0, -12); c.lineTo(-5, 8); c.stroke(); c.globalAlpha = 1;
+        glow(col, 8); c.fillStyle = 'rgba(0,255,140,.2)'; c.strokeStyle = col; c.lineWidth = 1; c.beginPath(); c.ellipse(0, -7, 4, 7, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(255,255,255,.28)'; c.beginPath(); c.ellipse(-1, -10, 1.8, 3, .3, 0, Math.PI * 2); c.fill();
+        c.fillStyle = col; glow(col, 5); c.beginPath(); c.arc(0, -22, 2, 0, Math.PI * 2); c.fill();
+        [-9, 9].forEach(ex => { c.fillStyle = col; glow(col, 5); c.beginPath(); c.arc(ex, 16, 2.5, 0, Math.PI * 2); c.fill(); });
+      } else if (shipId === 'titan') {
+        const fl = 12 + Math.sin(thrustAnim) * 5;
+        [-13, 0, 13].forEach(ex => { const tg2 = c.createLinearGradient(ex, 22, ex, 22 + fl * 2); tg2.addColorStop(0, 'rgba(170,80,255,.95)'); tg2.addColorStop(.5, 'rgba(100,0,200,.5)'); tg2.addColorStop(1, 'rgba(50,0,150,0)'); c.beginPath(); c.moveTo(ex - 5, 21); c.quadraticCurveTo(ex, 22 + fl * 2, ex + 5, 21); c.fillStyle = tg2; c.fill(); });
+        glow(col, 12); c.fillStyle = 'rgba(30,10,55,.96)'; c.strokeStyle = col; c.lineWidth = 1.3;
+        c.beginPath(); c.moveTo(-10, 2); c.lineTo(-28, 10); c.lineTo(-30, 22); c.lineTo(-18, 26); c.lineTo(-10, 20); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(10, 2); c.lineTo(28, 10); c.lineTo(30, 22); c.lineTo(18, 26); c.lineTo(10, 20); c.closePath(); c.fill(); c.stroke();
+        c.fillStyle = acc; glow(acc, 6);[-26, 26].forEach(gx => { c.fillRect(gx - 2, 14, 4, 12); c.beginPath(); c.arc(gx, 14, 3, 0, Math.PI * 2); c.fill(); });
+        glow(col, 14); c.fillStyle = 'rgba(25,8,50,.96)'; c.strokeStyle = col; c.lineWidth = 1.5;
+        c.beginPath(); c.moveTo(0, -26); c.lineTo(12, 4); c.lineTo(14, 26); c.lineTo(-14, 26); c.lineTo(-12, 4); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = `rgba(170,80,255,.25)`; c.lineWidth = .8; c.beginPath(); c.moveTo(-10, -4); c.lineTo(-12, 14); c.stroke(); c.beginPath(); c.moveTo(10, -4); c.lineTo(12, 14); c.stroke();
+        glow(col, 10); c.fillStyle = 'rgba(160,60,255,.22)'; c.strokeStyle = col; c.lineWidth = 1.2; c.beginPath(); c.ellipse(0, -6, 6, 9, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(255,255,255,.22)'; c.beginPath(); c.ellipse(-2, -9, 2.5, 4, .3, 0, Math.PI * 2); c.fill();
+        c.fillStyle = col; glow(col, 8); c.beginPath(); c.arc(0, -26, 2.5, 0, Math.PI * 2); c.fill();
+      } else if (shipId === 'phoenix') {
+        const fl = 9 + Math.sin(thrustAnim) * 5;
+        [-8, 8].forEach(ex => { const tg2 = c.createLinearGradient(ex, 18, ex, 18 + fl * 2.5); tg2.addColorStop(0, 'rgba(255,140,0,.95)'); tg2.addColorStop(.4, 'rgba(255,60,0,.6)'); tg2.addColorStop(1, 'rgba(200,30,0,0)'); c.beginPath(); c.moveTo(ex - 5, 17); c.quadraticCurveTo(ex, 18 + fl * 2.5, ex + 5, 17); c.fillStyle = tg2; c.fill(); });
+        glow(col, 12); c.fillStyle = 'rgba(40,15,0,.96)'; c.strokeStyle = col; c.lineWidth = 1.1;
+        c.beginPath(); c.moveTo(-7, 0); c.lineTo(-25, 8); c.lineTo(-28, 18); c.lineTo(-22, 20); c.lineTo(-8, 14); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(7, 0); c.lineTo(25, 8); c.lineTo(28, 18); c.lineTo(22, 20); c.lineTo(8, 14); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = acc; c.lineWidth = .8; c.globalAlpha = .55; c.beginPath(); c.moveTo(-10, 6); c.lineTo(-24, 16); c.stroke(); c.beginPath(); c.moveTo(10, 6); c.lineTo(24, 16); c.stroke(); c.globalAlpha = 1;
+        glow(col, 13); c.fillStyle = 'rgba(35,10,0,.96)'; c.strokeStyle = col; c.lineWidth = 1.3;
+        c.beginPath(); c.moveTo(0, -24); c.lineTo(9, 6); c.lineTo(10, 20); c.lineTo(-10, 20); c.lineTo(-9, 6); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = acc; c.lineWidth = 1; c.globalAlpha = .4; c.beginPath(); c.moveTo(-6, 2); c.lineTo(-7, 14); c.stroke(); c.beginPath(); c.moveTo(6, 2); c.lineTo(7, 14); c.stroke(); c.globalAlpha = 1;
+        glow(col, 9); c.fillStyle = 'rgba(255,100,0,.25)'; c.strokeStyle = col; c.lineWidth = 1.1; c.beginPath(); c.ellipse(0, -6, 5, 8, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(255,255,255,.25)'; c.beginPath(); c.ellipse(-1.5, -9, 2, 3.5, .3, 0, Math.PI * 2); c.fill();
+        c.fillStyle = col; glow(col, 7); c.beginPath(); c.arc(0, -24, 2, 0, Math.PI * 2); c.fill();
+      } else if (shipId === 'spectre') {
+        const fl = 8 + Math.sin(thrustAnim) * 4;
+        [-7, 7].forEach(ex => { const tg2 = c.createLinearGradient(ex, 18, ex, 18 + fl * 2.2); tg2.addColorStop(0, 'rgba(200,0,255,.9)'); tg2.addColorStop(.5, 'rgba(100,0,200,.5)'); tg2.addColorStop(1, 'rgba(50,0,150,0)'); c.beginPath(); c.moveTo(ex - 4, 17); c.quadraticCurveTo(ex, 18 + fl * 2.2, ex + 4, 17); c.fillStyle = tg2; c.fill(); });
+        glow(col, 12); c.fillStyle = 'rgba(20,0,35,.97)'; c.strokeStyle = col; c.lineWidth = 1.1;
+        c.beginPath(); c.moveTo(-4, -6); c.lineTo(-26, 14); c.lineTo(-22, 22); c.lineTo(-6, 18); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(4, -6); c.lineTo(26, 14); c.lineTo(22, 22); c.lineTo(6, 18); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = acc; c.lineWidth = .8; c.globalAlpha = .45; c.beginPath(); c.moveTo(-18, 10); c.lineTo(-24, 18); c.stroke(); c.beginPath(); c.moveTo(18, 10); c.lineTo(24, 18); c.stroke(); c.globalAlpha = 1;
+        glow(col, 14); c.fillStyle = 'rgba(18,0,30,.97)'; c.strokeStyle = col; c.lineWidth = 1.2;
+        c.beginPath(); c.moveTo(0, -26); c.lineTo(6, 6); c.lineTo(7, 22); c.lineTo(-7, 22); c.lineTo(-6, 6); c.closePath(); c.fill(); c.stroke();
+        const acc2 = SHIPS.spectre.accentColor; glow(acc2, 10); c.fillStyle = 'rgba(0,250,255,.18)'; c.strokeStyle = acc2; c.lineWidth = 1; c.beginPath(); c.ellipse(0, -8, 4, 7, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(255,255,255,.3)'; c.beginPath(); c.ellipse(-1, -11, 1.8, 3, .3, 0, Math.PI * 2); c.fill();
+        c.fillStyle = col; glow(col, 8); c.beginPath(); c.arc(0, -26, 2, 0, Math.PI * 2); c.fill();
+        c.strokeStyle = `rgba(200,0,255,.2)`; c.lineWidth = .7; c.beginPath(); c.ellipse(0, 5, 12, 4, 0, 0, Math.PI * 2); c.stroke();
+      }
+      c.restore();
+    }
+
+    function drawEnemyShip(c, type, x, y, scale, animT, flashW) {
+      try {
+      c.save(); c.translate(x, y); c.scale(scale, scale);
+      const glow = (col, r) => { c.shadowBlur = r; c.shadowColor = col; };
+      if (flashW) { c.shadowBlur = 20; c.shadowColor = '#fff'; }
+      if (type === 'basic') {
+        glow('#44ff44', 8); c.fillStyle = flashW ? 'rgba(255,255,255,.95)' : 'rgba(10,35,10,.95)'; c.strokeStyle = '#44ff44'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(0, -14); c.lineTo(10, 4); c.lineTo(8, 14); c.lineTo(-8, 14); c.lineTo(-10, 4); c.closePath(); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(20,60,20,.9)'; c.strokeStyle = '#66ff66'; c.lineWidth = .8;
+        c.beginPath(); c.moveTo(-6, 2); c.lineTo(-18, 8); c.lineTo(-16, 14); c.lineTo(-8, 12); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(6, 2); c.lineTo(18, 8); c.lineTo(16, 14); c.lineTo(8, 12); c.closePath(); c.fill(); c.stroke();
+        glow('#88ff88', 6); c.fillStyle = 'rgba(150,255,80,.3)'; c.strokeStyle = '#88ff88'; c.lineWidth = .8; c.beginPath(); c.ellipse(0, -2, 4, 6, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = '#ff3300'; c.shadowColor = '#ff3300'; c.shadowBlur = 5; c.beginPath(); c.arc(-3, 2, 2, 0, Math.PI * 2); c.fill(); c.beginPath(); c.arc(3, 2, 2, 0, Math.PI * 2); c.fill();
+      } else if (type === 'fast') {
+        glow('#4488ff', 8); c.fillStyle = flashW ? 'rgba(255,255,255,.95)' : 'rgba(5,15,40,.95)'; c.strokeStyle = '#4488ff'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(0, -12); c.lineTo(8, 4); c.lineTo(6, 12); c.lineTo(-6, 12); c.lineTo(-8, 4); c.closePath(); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(5,15,40,.9)'; c.strokeStyle = '#6699ff'; c.lineWidth = .8;
+        c.beginPath(); c.moveTo(-5, 0); c.lineTo(-16, 6); c.lineTo(-15, 12); c.lineTo(-6, 10); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(5, 0); c.lineTo(16, 6); c.lineTo(15, 12); c.lineTo(6, 10); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = 'rgba(68,136,255,.5)'; c.lineWidth = .7;[[-6, 0, -14, -4], [-6, 4, -14, 2], [6, 0, 14, -4], [6, 4, 14, 2]].forEach(([x1, y1, x2, y2]) => { c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); });
+        glow('#88aaff', 5); c.fillStyle = 'rgba(100,150,255,.3)'; c.strokeStyle = '#88aaff'; c.lineWidth = .8; c.beginPath(); c.ellipse(0, -1, 3.5, 5, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = '#ffaa00'; c.shadowColor = '#ffaa00'; c.shadowBlur = 5; c.beginPath(); c.arc(-3, 2, 1.5, 0, Math.PI * 2); c.fill(); c.beginPath(); c.arc(3, 2, 1.5, 0, Math.PI * 2); c.fill();
+      } else if (type === 'tank') {
+        glow('#aa44ff', 10); c.fillStyle = flashW ? 'rgba(255,255,255,.95)' : 'rgba(25,5,50,.96)'; c.strokeStyle = '#aa44ff'; c.lineWidth = 1.3;
+        c.beginPath(); c.moveTo(0, -18); c.lineTo(14, 2); c.lineTo(16, 18); c.lineTo(-16, 18); c.lineTo(-14, 2); c.closePath(); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(30,8,55,.9)'; c.strokeStyle = '#cc66ff'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(-10, 0); c.lineTo(-26, 8); c.lineTo(-28, 18); c.lineTo(-16, 20); c.lineTo(-10, 16); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(10, 0); c.lineTo(26, 8); c.lineTo(28, 18); c.lineTo(16, 20); c.lineTo(10, 16); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = 'rgba(170,68,255,.3)'; c.lineWidth = .8; c.strokeRect(-8, 2, 16, 10);
+        glow('#cc66ff', 8); c.fillStyle = 'rgba(170,68,255,.25)'; c.strokeStyle = '#cc66ff'; c.lineWidth = 1; c.beginPath(); c.ellipse(0, -3, 6, 9, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = '#ff0080'; c.shadowColor = '#ff0080'; c.shadowBlur = 6; c.beginPath(); c.arc(-4, 2, 2.5, 0, Math.PI * 2); c.fill(); c.beginPath(); c.arc(4, 2, 2.5, 0, Math.PI * 2); c.fill();
+      } else if (type === 'kamikaze') {
+        glow('#ff2244', 10); c.fillStyle = flashW ? 'rgba(255,255,255,.95)' : 'rgba(40,0,10,.94)'; c.strokeStyle = '#ff2244'; c.lineWidth = 1.2;
+        c.beginPath(); c.arc(0, 0, 9, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.strokeStyle = 'rgba(255,50,80,.75)'; c.lineWidth = 1.2;
+        for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2 + animT * 2; c.beginPath(); c.moveTo(Math.cos(a) * 8, Math.sin(a) * 8); c.lineTo(Math.cos(a) * 15, Math.sin(a) * 15); c.stroke(); }
+        glow('#ff6688', 5); c.fillStyle = 'rgba(255,100,100,.4)'; c.beginPath(); c.arc(0, 0, 4, 0, Math.PI * 2); c.fill();
+      } else if (type === 'boss') {
+        const pulse = .75 + .25 * Math.sin(animT * 3);
+        glow('#ff0055', 16);
+        c.fillStyle = flashW ? 'rgba(255,200,200,.96)' : 'rgba(60,5,20,.97)'; c.strokeStyle = '#ff2244'; c.lineWidth = 1.5;
+        c.beginPath(); c.moveTo(-22, 0); c.lineTo(-44, 14); c.lineTo(-48, 32); c.lineTo(-36, 36); c.lineTo(-20, 28); c.closePath(); c.fill(); c.stroke();
+        c.beginPath(); c.moveTo(22, 0); c.lineTo(44, 14); c.lineTo(48, 32); c.lineTo(36, 36); c.lineTo(20, 28); c.closePath(); c.fill(); c.stroke();
+        c.fillStyle = '#ff6600'; glow('#ff6600', 8);[[-42, 28], [42, 28]].forEach(([gx, gy]) => { c.fillRect(gx - 3, gy, 6, 14); c.beginPath(); c.arc(gx, gy + 14, 4, 0, Math.PI * 2); c.fill(); });
+        glow('#ff0055', 18); c.fillStyle = flashW ? 'rgba(255,180,180,.97)' : 'rgba(50,4,18,.97)'; c.strokeStyle = '#ff2244'; c.lineWidth = 2;
+        c.beginPath(); c.moveTo(0, -40); c.lineTo(22, 4); c.lineTo(24, 36); c.lineTo(-24, 36); c.lineTo(-22, 4); c.closePath(); c.fill(); c.stroke();
+        c.strokeStyle = 'rgba(255,50,80,.25)'; c.lineWidth = 1; c.strokeRect(-15, 8, 30, 20);
+        c.beginPath(); c.moveTo(-12, 8); c.lineTo(-14, 28); c.stroke(); c.beginPath(); c.moveTo(12, 8); c.lineTo(14, 28); c.stroke();
+        c.fillStyle = `rgba(255,0,80,${pulse})`; glow('#ff0080', 20); c.beginPath(); c.arc(0, 10, 12, 0, Math.PI * 2); c.fill();
+        c.fillStyle = `rgba(255,150,100,${pulse})`; c.beginPath(); c.arc(0, 10, 5, 0, Math.PI * 2); c.fill();
+        glow('#ff8800', 10); c.fillStyle = 'rgba(255,80,0,.3)'; c.strokeStyle = '#ff8800'; c.lineWidth = 1.2; c.beginPath(); c.ellipse(0, -12, 7, 11, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+        c.fillStyle = 'rgba(255,255,200,.3)'; c.beginPath(); c.ellipse(-2, -16, 3, 5, .3, 0, Math.PI * 2); c.fill();
+        c.fillStyle = '#ff2244'; glow('#ff2244', 8); c.beginPath(); c.arc(0, -40, 3, 0, Math.PI * 2); c.fill();
+      }
+      c.restore();
+      } catch(e) {}
+    }
+
+    // ═══════════════ STARS / BG ═══════════════
+    const stars = [], nebs = [];
+    function initStars() {
+      stars.length = nebs.length = 0;
+      for (let i = 0; i < 220; i++)stars.push({ x: Math.random() * W, y: Math.random() * H, sz: Math.random() * 2 + .2, spd: Math.random() * .65 + .08, op: Math.random() * .75 + .2, tw: Math.random() * Math.PI * 2, col: Math.random() > .85 ? 1 : 0 });
+      for (let i = 0; i < 4; i++)nebs.push({ x: Math.random() * W, y: Math.random() * H, r: 70 + Math.random() * 110, h: 200 + Math.random() * 100 });
+    }
+    function drawBG(dt) {
+      bgX.fillStyle = '#03040f'; bgX.fillRect(0, 0, W, H);
+      nebs.forEach(n => { const g = bgX.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.r); g.addColorStop(0, `hsla(${n.h},80%,30%,.04)`); g.addColorStop(1, 'transparent'); bgX.beginPath(); bgX.arc(n.x, n.y, n.r, 0, Math.PI * 2); bgX.fillStyle = g; bgX.fill(); });
+      const laneX = [W * .28, W * .72];
+      laneX.forEach(lx => { const lg = bgX.createLinearGradient(lx, 0, lx, H); lg.addColorStop(0, 'rgba(255,180,0,0)'); lg.addColorStop(.3, 'rgba(255,180,0,.08)'); lg.addColorStop(.7, 'rgba(255,180,0,.08)'); lg.addColorStop(1, 'rgba(255,180,0,0)'); bgX.fillStyle = lg; bgX.fillRect(lx - 1, 0, 2, H); });
+      stars.forEach(s => { s.y += s.spd * dt * 60; s.tw += dt * 2.5; if (s.y > H) { s.y = 0; s.x = Math.random() * W; } const op = s.op * (.65 + .35 * Math.sin(s.tw)); bgX.beginPath(); bgX.arc(s.x, s.y, Math.max(.1, s.sz), 0, Math.PI * 2); bgX.fillStyle = s.col ? `rgba(255,220,180,${op})` : `rgba(210,220,255,${op})`; bgX.fill(); });
+    }
+
+    // ═══════════════ INPUT ═══════════════
+    const K = {};
+    // D-Pad state
+    const DP = { up: false, down: false, left: false, right: false };
+    function dpadPress(dir, pressed) {
+      DP[dir] = pressed;
+      const el = document.getElementById('DB_' + dir.toUpperCase());
+      if (el) { if (pressed) el.classList.add('pressed'); else el.classList.remove('pressed'); }
+    }
+    // Prevent context menu on long press for dpad
+    document.querySelectorAll('.DBTN').forEach(b => { b.addEventListener('contextmenu', e => e.preventDefault()); });
+
+    document.addEventListener('keydown', e => { K[e.code] = true; if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault(); if ((e.code === 'Escape' || e.code === 'KeyP') && running) { paused ? unPause() : doPause(); } });
+    document.addEventListener('keyup', e => { K[e.code] = false; });
+    let tid = null, ltx = 0, lty = 0, md = false, lmx = 0, lmy = 0;
+    cv.addEventListener('touchstart', e => { e.preventDefault(); const t = e.changedTouches[0]; tid = t.identifier; ltx = t.clientX; lty = t.clientY; }, { passive: false });
+    cv.addEventListener('touchmove', e => { e.preventDefault(); for (const t of e.changedTouches) if (t.identifier === tid && player) { const r = cv.getBoundingClientRect(), sx = W / r.width, sy = H / r.height; player.x = Math.max(player.w / 2, Math.min(W - player.w / 2, player.x + (t.clientX - ltx) * sx)); player.y = Math.max(player.h / 2, Math.min(H - player.h / 2, player.y + (t.clientY - lty) * sy)); ltx = t.clientX; lty = t.clientY; } }, { passive: false });
+    cv.addEventListener('touchend', e => { for (const t of e.changedTouches) if (t.identifier === tid) tid = null; });
+    cv.addEventListener('mousedown', e => { md = true; const r = cv.getBoundingClientRect(); lmx = (e.clientX - r.left) * (W / r.width); lmy = (e.clientY - r.top) * (H / r.height); });
+    cv.addEventListener('mousemove', e => { if (!md || !player) return; const r = cv.getBoundingClientRect(), mx = (e.clientX - r.left) * (W / r.width), my = (e.clientY - r.top) * (H / r.height); player.x = Math.max(player.w / 2, Math.min(W - player.w / 2, player.x + (mx - lmx))); player.y = Math.max(player.h / 2, Math.min(H - player.h / 2, player.y + (my - lmy))); lmx = mx; lmy = my; });
+    cv.addEventListener('mouseup', () => md = false); cv.addEventListener('mouseleave', () => md = false);
+
+    function movePlayer(dt) {
+      if (!player) return; const s = player.spd;
+      const goL = K['ArrowLeft'] || K['KeyA'] || DP.left;
+      const goR = K['ArrowRight'] || K['KeyD'] || DP.right;
+      const goU = K['ArrowUp'] || K['KeyW'] || DP.up;
+      const goD = K['ArrowDown'] || K['KeyS'] || DP.down;
+      if (goL) player.x = Math.max(player.w / 2, player.x - s * dt);
+      if (goR) player.x = Math.min(W - player.w / 2, player.x + s * dt);
+      if (goU) player.y = Math.max(player.h / 2, player.y - s * dt);
+      if (goD) player.y = Math.min(H - player.h / 2, player.y + s * dt);
+    }
+
+    // ═══════════════ PLAYER ═══════════════
+    function mkPlayer() {
+      const ship = SHIPS[GS.activeShip], upg = GS.shipUpgrades[GS.activeShip];
+      const mhp = Math.floor(ship.baseHP * (1 + upg.hp * .22));
+      return { x: W / 2, y: H - 160, w: 40, h: 52, hp: mhp, mhp, spd: ship.baseSPD * (1 + upg.spd * .12), fr: Math.max(.06, ship.baseFR * (1 - upg.fr * .06)), dmg: Math.floor(ship.baseDMG * (1 + upg.dmg * .18)), fc: 0, inv: 0, trail: [], tt: 0, shipId: GS.activeShip };
+    }
+    function hexToRgb(hex) { const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return `${r},${g},${b}`; }
+
+    function drawPlayer(dt) {
+      if (!player) return;
+      const p = player;
+      if (p.inv > 0 && Math.floor(p.inv * 10) % 2 === 0) return;
+      try {
+      p.tt += dt * 12;
+      p.trail.push({ x: p.x, y: p.y, life: 1 });
+      if (p.trail.length > 10) p.trail.shift();
+      p.trail.forEach((t, i) => {
+        t.life -= dt * 8; if (t.life <= 0) return;
+        const r = Math.max(.01, (i / p.trail.length) * 10 * t.life);
+        const g = cx.createRadialGradient(t.x, t.y, 0, t.x, t.y, r);
+        const col = SHIPS[p.shipId].color;
+        g.addColorStop(0, `rgba(255,255,255,${t.life * .25})`); g.addColorStop(1, `rgba(${hexToRgb(col)},0)`);
+        cx.beginPath(); cx.arc(t.x, t.y, r, 0, Math.PI * 2); cx.fillStyle = g; cx.fill();
+      });
+      drawShipOnCtx(cx, p.shipId, p.x, p.y, 1.1, p.tt);
+      if (aps.shield) {
+        const sp = .55 + .45 * Math.sin(Date.now() * .004);
+        cx.save(); cx.shadowBlur = 22; cx.shadowColor = '#0088ff'; cx.strokeStyle = `rgba(0,150,255,${sp})`; cx.lineWidth = 2.5;
+        cx.beginPath(); cx.ellipse(p.x, p.y, p.w * .95, p.h * .75, 0, 0, Math.PI * 2); cx.stroke();
+        cx.fillStyle = `rgba(0,100,255,${.05 * sp})`; cx.fill(); cx.restore();
+      }
+      } catch(e) {}
+    }
+
+    // ═══════════════ BULLETS ═══════════════
+    let lss = 0;
+    function shoot() {
+      const p = player, d = p.dmg * (aps.double ? 2 : 1), w = GS.weapon, now = Date.now();
+      if (now - lss > 80) { if (w === 'plasma') snd('plasma'); else if (w === 'missile') snd('missile'); else snd('laser'); lss = now; }
+      if (w === 'laser') bullets.push({ x: p.x, y: p.y - p.h * .52, vx: 0, vy: -720, d, type: 'laser', sz: 4, life: 1 });
+      else if (w === 'dual') { bullets.push({ x: p.x - 13, y: p.y - p.h * .3, vx: 0, vy: -700, d, type: 'dual', sz: 3.5, life: 1 }); bullets.push({ x: p.x + 13, y: p.y - p.h * .3, vx: 0, vy: -700, d, type: 'dual', sz: 3.5, life: 1 }); }
+      else if (w === 'spread') { for (let a = -1; a <= 1; a++)bullets.push({ x: p.x, y: p.y - p.h * .5, vx: a * 185, vy: -660, d: d * .78, type: 'spread', sz: 4, life: 1 }); }
+      else if (w === 'plasma') bullets.push({ x: p.x, y: p.y - p.h * .5, vx: 0, vy: -420, d: d * 2.5, type: 'plasma', sz: 10, life: 1 });
+      else if (w === 'missile') { const tgt = enemies.length ? enemies.reduce((a, b) => dst(p.x, p.y, a.x, a.y) < dst(p.x, p.y, b.x, b.y) ? a : b) : null;[{ vx: -28 }, { vx: 28 }].forEach(v => bullets.push({ x: p.x + (v.vx > 0 ? 10 : -10), y: p.y - p.h * .3, ...v, vy: -500, d: d * 1.8, type: 'missile', sz: 5, life: 1, tgt })); }
+    }
+    const BCOLS = { laser: '#00f5ff', dual: '#00ff88', spread: '#ffcc00', plasma: '#cc00ff', missile: '#ff5500' };
+    function drawBullets(dt) {
+      bullets = bullets.filter(b => b.life > 0 && b.y > -40 && b.y < H + 40 && b.x > -60 && b.x < W + 60);
+      bullets.forEach(b => {
+        b.y += b.vy * dt; b.x += b.vx * dt;
+        if (b.type === 'missile' && b.tgt && b.tgt.hp > 0 && !b.tgt.dead) { const tx = b.tgt.x - b.x, ty = b.tgt.y - b.y, dd = Math.sqrt(tx * tx + ty * ty); if (dd > 0) { b.vx += (tx / dd) * 400 * dt; b.vy += (ty / dd) * 400 * dt; } const sp = Math.sqrt(b.vx * b.vx + b.vy * b.vy); if (sp > 660) { b.vx = (b.vx / sp) * 660; b.vy = (b.vy / sp) * 660; } }
+        cx.save(); const col = BCOLS[b.type] || '#fff'; cx.shadowBlur = 12; cx.shadowColor = col;
+        if (b.type === 'missile') { cx.translate(b.x, b.y); cx.rotate(Math.atan2(b.vy, b.vx) + Math.PI / 2); cx.fillStyle = '#cc4400'; cx.fillRect(-2.5, -8, 5, 12); cx.fillStyle = '#ff8844'; cx.beginPath(); cx.moveTo(-2.5, -8); cx.lineTo(0, -13); cx.lineTo(2.5, -8); cx.closePath(); cx.fill(); cx.fillStyle = 'rgba(255,150,0,.8)'; cx.beginPath(); cx.arc(0, 5, 2.5, 0, Math.PI * 2); cx.fill(); }
+        else if (b.type === 'plasma') { const gr = cx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.sz * 2); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(.3, 'rgba(200,0,255,.8)'); gr.addColorStop(1, 'rgba(80,0,180,0)'); cx.beginPath(); cx.arc(b.x, b.y, b.sz * 2, 0, Math.PI * 2); cx.fillStyle = gr; cx.fill(); cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(b.x, b.y, Math.max(.5, b.sz * .35), 0, Math.PI * 2); cx.fill(); }
+        else { cx.strokeStyle = col; cx.lineWidth = b.sz * .55; cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(b.x, b.y); cx.lineTo(b.x - b.vx * .012, b.y - b.vy * .012); cx.stroke(); cx.fillStyle = '#fff'; cx.shadowBlur = 5; cx.beginPath(); cx.arc(b.x, b.y, Math.max(.5, b.sz * .3), 0, Math.PI * 2); cx.fill(); }
+        cx.restore();
+      });
+    }
+
+    // ═══════════════ ENEMIES ═══════════════
+    const ET = { basic: { w: 30, h: 28, hp: 32, spd: 80, fr: 2.2, dmg: 10, coins: 5, sc: 100, col: '#44ff44' }, fast: { w: 24, h: 22, hp: 20, spd: 210, fr: 3, dmg: 8, coins: 8, sc: 150, col: '#4488ff' }, tank: { w: 44, h: 40, hp: 130, spd: 45, fr: 1.5, dmg: 18, coins: 22, sc: 300, col: '#aa44ff' }, kamikaze: { w: 20, h: 20, hp: 28, spd: 250, fr: 0, dmg: 28, coins: 6, sc: 120, col: '#ff2244' }, boss: { w: 90, h: 80, hp: 900, spd: 50, fr: .6, dmg: 22, coins: 180, sc: 2500, col: '#ff0055' } };
+    function spawnEnemy(type) { const c = ET[type], diff = 1 + wave * .12, fr = c.fr || 1; enemies.push({ x: type === 'boss' ? W / 2 : Math.random() * (W - c.w * 2) + c.w, y: type === 'boss' ? -c.h : -c.h - Math.random() * 60, w: c.w, h: c.h, hp: Math.floor(c.hp * diff), mhp: Math.floor(c.hp * diff), spd: c.spd * (1 + wave * .04), fr, fc: Math.random() * fr, dmg: c.dmg, coins: c.coins + Math.floor(wave * 1.5), sc: c.sc, type, col: c.col, vx: type === 'boss' ? 0 : (Math.random() - .5) * 40, vy: 0, mt: 0, md: 1 + Math.random() * 2, pt: 0, dead: false, hf: 0 }); }
+    function updateEnemies(dt) {
+      enemies.forEach(e => {
+        if (e.dead) return; e.mt += dt; e.pt += dt; if (e.hf > 0) e.hf -= dt;
+        if (e.type === 'boss') { if (e.y < 100) e.y += e.spd * dt * .5; e.x = W / 2 + Math.sin(e.pt * .6) * (W * .35); }
+        else if (e.type === 'kamikaze') { const dx = player.x - e.x, dy = player.y - e.y, dd = Math.sqrt(dx * dx + dy * dy); if (dd > 0) { e.vx += (dx / dd) * 420 * dt; e.vy += (dy / dd) * 420 * dt; } const sp = Math.sqrt(e.vx * e.vx + e.vy * e.vy); if (sp > e.spd) { e.vx = (e.vx / sp) * e.spd; e.vy = (e.vy / sp) * e.spd; } e.x += e.vx * dt; e.y += e.vy * dt; }
+        else { if (e.y < 80) { e.vy += 185 * dt; e.vy = Math.min(e.vy, e.spd); } else { e.vy = 0; if (e.mt > e.md) { e.vx = (Math.random() - .5) * e.spd * .85; e.mt = 0; e.md = .8 + Math.random() * 1.5; } e.x += e.vx * dt; if (e.x < e.w / 2) { e.x = e.w / 2; e.vx *= -1; } if (e.x > W - e.w / 2) { e.x = W - e.w / 2; e.vx *= -1; } } e.y += e.vy * dt; }
+        if (e.fr > 0) {
+          e.fc -= dt; if (e.fc <= 0) {
+            e.fc = e.fr / (1 + wave * .04);
+            if (e.type === 'boss') {
+              const p2 = Math.floor(e.pt * .26) % 3;
+              if (p2 === 0) for (let a = -1; a <= 1; a++)ebullets.push({ x: e.x + a * 22, y: e.y + e.h * .4, vx: a * 80, vy: 280, dmg: e.dmg, sz: 5, type: 'boss' });
+              else if (p2 === 1) for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; ebullets.push({ x: e.x, y: e.y + e.h * .4, vx: Math.cos(a) * 180, vy: Math.sin(a) * 180 + 100, dmg: e.dmg * .7, sz: 4, type: 'boss' }); }
+              else ebullets.push({ x: e.x, y: e.y + e.h * .4, vx: 0, vy: 370, dmg: e.dmg * 1.6, sz: 10, type: 'boss' });
+            } else ebullets.push({ x: e.x, y: e.y + e.h * .4, vx: (Math.random() - .5) * 55, vy: 215 + wave * 6, dmg: e.dmg, sz: 4, type: 'enemy' });
+          }
+        }
+      });
+    }
+    function drawEnemies() {
+      enemies.forEach(e => {
+        if (e.dead) return;
+        const sc = e.type === 'boss' ? 1.1 : (e.type === 'tank' ? .9 : .75);
+        drawEnemyShip(cx, e.type, e.x, e.y, sc, e.pt, e.hf > 0);
+        if (e.type !== 'boss' && e.hp < e.mhp) { const bw = e.w * .9, bh = 3, bx = e.x - bw / 2, by = e.y - e.h * .62; cx.fillStyle = 'rgba(0,0,0,.55)'; cx.fillRect(bx, by, bw, bh); const hp = Math.max(0, e.hp / e.mhp); cx.fillStyle = hp > .5 ? '#44ff44' : hp > .25 ? '#ffaa00' : '#ff2244'; cx.shadowBlur = 3; cx.shadowColor = cx.fillStyle; cx.fillRect(bx, by, bw * hp, bh); }
+        if (e.type === 'boss') { const bw = e.w * 1.6, bh = 8, bx = e.x - bw / 2, by = e.y - e.h * .62; cx.fillStyle = 'rgba(0,0,0,.65)'; cx.fillRect(bx - 1, by - 1, bw + 2, bh + 2); const hp = Math.max(0, e.hp / e.mhp); const bc = hp > .5 ? '#ff0080' : hp > .25 ? '#ff8800' : '#ff2200'; cx.fillStyle = bc; cx.shadowBlur = 6; cx.shadowColor = bc; cx.fillRect(bx, by, bw * hp, bh); cx.strokeStyle = 'rgba(255,0,80,.35)'; cx.lineWidth = 1; cx.strokeRect(bx, by, bw, bh); }
+      });
+    }
+
+    // ═══════════════ ENEMY BULLETS ═══════════════
+    function drawEBullets(dt) {
+      ebullets = ebullets.filter(b => b.y < H + 28 && b.y > -28 && b.x > -28 && b.x < W + 28);
+      ebullets.forEach(b => {
+        b.x += b.vx * dt; b.y += b.vy * dt;
+        cx.save(); const col = b.type === 'boss' ? '#ff0080' : '#ff3333'; cx.shadowBlur = 10; cx.shadowColor = col;
+        const r = Math.max(.5, b.sz);
+        if (b.type === 'boss' && b.sz > 7) { const gr = cx.createRadialGradient(b.x, b.y, 0, b.x, b.y, r); gr.addColorStop(0, 'rgba(255,200,200,.95)'); gr.addColorStop(.4, col); gr.addColorStop(1, 'rgba(200,0,80,0)'); cx.beginPath(); cx.arc(b.x, b.y, r, 0, Math.PI * 2); cx.fillStyle = gr; cx.fill(); }
+        else { cx.fillStyle = col; cx.beginPath(); cx.arc(b.x, b.y, r, 0, Math.PI * 2); cx.fill(); cx.fillStyle = 'rgba(255,200,200,.7)'; cx.beginPath(); cx.arc(b.x, b.y, Math.max(.3, r * .4), 0, Math.PI * 2); cx.fill(); }
+        cx.restore();
+      });
+    }
+
+    // ═══════════════ COINS ═══════════════
+    let lcs = 0;
+    function spawnCoins(x, y, n, val) { for (let i = 0; i < n; i++)coins.push({ x, y, vx: (Math.random() - .5) * 160, vy: (Math.random() - 1) * 120, val, life: 5, sz: val > 20 ? 9 : 6, spin: Math.random() * Math.PI * 2 }); }
+    function drawCoins(dt) {
+      coins = coins.filter(c => c.life > 0);
+      coins.forEach(c => {
+        c.vy += 195 * dt; c.x += c.vx * dt; c.y += c.vy * dt; c.spin += dt * 5; c.life -= dt; if (c.y > H) { c.life = 0; return; }
+        if (aps.magnet) { const dx = player.x - c.x, dy = player.y - c.y, dd = Math.sqrt(dx * dx + dy * dy); if (dd > 0) { c.vx += (dx / dd) * 620 * dt; c.vy += (dy / dd) * 620 * dt; } }
+        const dd = dst(player.x, player.y, c.x, c.y);
+        if (dd < 32) { GS.coins += c.val; score += c.val * 2; FT(c.x, c.y, `+${c.val}`, '#ffee00'); const now = Date.now(); if (now - lcs > 60) { snd('coin'); lcs = now; } c.life = 0; updateHUD(); return; }
+        cx.save(); cx.shadowBlur = 9; cx.shadowColor = '#ffcc00'; cx.translate(c.x, c.y); cx.rotate(c.spin);
+        cx.fillStyle = '#ffcc00'; cx.strokeStyle = '#ffee44'; cx.lineWidth = 1; cx.beginPath();
+        for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 - Math.PI / 6; i === 0 ? cx.moveTo(Math.cos(a) * c.sz, Math.sin(a) * c.sz) : cx.lineTo(Math.cos(a) * c.sz, Math.sin(a) * c.sz); }
+        cx.closePath(); cx.fill(); cx.stroke(); cx.fillStyle = 'rgba(255,240,100,.65)'; cx.beginPath(); cx.arc(0, 0, Math.max(.5, c.sz * .38), 0, Math.PI * 2); cx.fill(); cx.restore();
+      });
+    }
+
+    // ═══════════════ POWER-UPS ═══════════════
+    const PUC = { shield: '#0088ff', rapid: '#ffcc00', double: '#ff0064', magnet: '#bb00ff' };
+    const PUL = { shield: 'SHIELD', rapid: 'RAPID FIRE', double: '2× DMG', magnet: 'MAGNET' };
+    function spawnPup(x, y) { if (Math.random() > .4) return; const ts = ['shield', 'rapid', 'double', 'magnet']; pups.push({ x, y, vy: 85, type: ts[Math.floor(Math.random() * ts.length)], life: 9, sp: 0 }); }
+    function drawPups(dt) {
+      pups = pups.filter(p => p.life > 0 && p.y < H + 28);
+      pups.forEach(p => {
+        p.y += p.vy * dt; p.sp += dt * 2.5; p.life -= dt;
+        if (dst(player.x, player.y, p.x, p.y) < 30) { actPup(p.type); p.life = 0; return; }
+        const col = PUC[p.type]; cx.save(); cx.shadowBlur = 15; cx.shadowColor = col; cx.translate(p.x, p.y); cx.rotate(p.sp);
+        cx.fillStyle = 'rgba(0,0,0,.75)'; cx.strokeStyle = col; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, -14); cx.lineTo(14, 0); cx.lineTo(0, 14); cx.lineTo(-14, 0); cx.closePath(); cx.fill(); cx.stroke();
+        cx.fillStyle = col + '44'; cx.beginPath(); cx.moveTo(0, -10); cx.lineTo(10, 0); cx.lineTo(0, 10); cx.lineTo(-10, 0); cx.closePath(); cx.fill();
+        cx.fillStyle = col; cx.font = 'bold 9px Arial'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText({ shield: '🛡', rapid: '⚡', double: '×2', magnet: '⬡' }[p.type] || '?', 0, 0); cx.restore();
+      });
+    }
+    function actPup(type) { aps[type] = true; if (ptimers[type]) clearTimeout(ptimers[type]); ptimers[type] = setTimeout(() => { delete aps[type]; if (type === 'rapid') player.fr = Math.max(.06, SHIPS[GS.activeShip].baseFR * (1 - GS.shipUpgrades[GS.activeShip].fr * .06)); renderPudHUD(); }, 12000); if (type === 'rapid') player.fr = Math.max(.04, player.fr * .28); snd('pu'); FT(player.x, player.y - 70, PUL[type], PUC[type]); renderPudHUD(); }
+    function renderPudHUD() { const el = document.getElementById('PUD'); el.innerHTML = ''; Object.keys(aps).forEach(t => { const p = document.createElement('div'); p.className = `pp ${t}`; p.textContent = PUL[t]; el.appendChild(p); }); }
+
+    // ═══════════════ PARTICLES ═══════════════
+    function spawnExp(x, y, col, n = 18, big = false) {
+      for (let i = 0; i < n; i++) { const sp = big ? (Math.random() * 280 + 90) : (Math.random() * 170 + 40), a = Math.random() * Math.PI * 2; parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, ml: big ? .9 : .5, sz: big ? (Math.random() * 7 + 2) : (Math.random() * 4 + 1), col, sw: false }); }
+      parts.push({ x, y, life: 1, ml: big ? .5 : .28, rad: 0, mr: big ? 90 : 42, sw: true, col });
+      for (let i = 0; i < (big ? 8 : 3); i++) { const sp = Math.random() * 120 + 30, a = Math.random() * Math.PI * 2; parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, ml: .7, sz: Math.random() * 3 + 1.5, col: 'rgba(220,200,180,.8)', sw: false, dbr: true }); }
+    }
+    function drawParts(dt) {
+      parts = parts.filter(p => p.life > 0);
+      parts.forEach(p => {
+        p.life -= dt / p.ml;
+        if (p.sw) { p.rad = p.mr * (1 - p.life); const r = Math.max(.1, p.rad); cx.save(); cx.strokeStyle = p.col; cx.globalAlpha = Math.max(0, p.life * .52); cx.lineWidth = 2.5; cx.shadowBlur = 8; cx.shadowColor = p.col; cx.beginPath(); cx.arc(p.x, p.y, r, 0, Math.PI * 2); cx.stroke(); cx.restore(); return; }
+        p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= .93; p.vy *= .93;
+        const r = Math.max(.1, p.dbr ? (p.sz * Math.max(0, p.life) * .8) : (p.sz * Math.max(0, p.life)));
+        cx.save(); cx.globalAlpha = Math.max(0, p.life); cx.fillStyle = p.col; cx.shadowBlur = p.dbr ? 0 : 7; cx.shadowColor = p.col; cx.beginPath(); cx.arc(p.x, p.y, r, 0, Math.PI * 2); cx.fill(); cx.restore();
+      });
+    }
+
+    // ═══════════════ FLOAT TEXT ═══════════════
+    function FT(x, y, text, color = '#fff') { const el = document.createElement('div'); el.className = 'FT'; el.style.cssText = `left:${x}px;top:${y}px;color:${color};text-shadow:0 0 8px ${color};`; el.textContent = text; document.getElementById('FC').appendChild(el); setTimeout(() => el.remove(), 900); }
+
+    // ═══════════════ COLLISION ═══════════════
+    function dst(x1, y1, x2, y2) { return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2); }
+    function spark(x, y, col) { for (let i = 0; i < 6; i++) { const a = Math.random() * Math.PI * 2, sp = Math.random() * 90 + 30; parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, ml: .22, sz: 2, col, sw: false }); } }
+    function collide() {
+      const p = player;
+      for (let bi = bullets.length - 1; bi >= 0; bi--) { const b = bullets[bi]; if (b.life <= 0) continue; for (let ei = enemies.length - 1; ei >= 0; ei--) { const e = enemies[ei]; if (e.dead) continue; if (Math.abs(b.x - e.x) < e.w / 2 + 5 && Math.abs(b.y - e.y) < e.h / 2 + 5) { e.hp -= b.d; e.hf = .1; b.life = 0; spark(b.x, b.y, e.col); if (e.hp <= 0) killEnemy(e); break; } } }
+      for (let i = ebullets.length - 1; i >= 0; i--) { const b = ebullets[i]; if (Math.abs(b.x - p.x) < p.w / 2 + b.sz && Math.abs(b.y - p.y) < p.h / 2 + b.sz) { if (aps.shield) { ebullets.splice(i, 1); spark(b.x, b.y, '#0088ff'); continue; } if (p.inv > 0) continue; p.hp -= b.dmg; p.inv = .85; ebullets.splice(i, 1); snd('hit'); if (typeof shake === 'function') shake(6); if (typeof comboCount !== 'undefined') { comboCount = 0; const ch = document.getElementById('COMBO_HUD'); if (ch) ch.classList.remove('show'); } updateHealthBar(); if (p.hp <= 0) { if (typeof takeLoss === 'function') { takeLoss(); return; } else { gameOver(); return; } } } }
+      for (let i = enemies.length - 1; i >= 0; i--) { const e = enemies[i]; if (e.dead || e.type !== 'kamikaze') continue; if (dst(p.x, p.y, e.x, e.y) < p.w / 2 + e.w / 2) { if (!aps.shield && p.inv <= 0) { p.hp -= e.dmg; p.inv = 1; snd('hit'); if (typeof shake === 'function') shake(7); updateHealthBar(); if (p.hp <= 0) { if (typeof takeLoss === 'function') { takeLoss(); return; } else { gameOver(); return; } } } e.hp = 0; killEnemy(e); } }
+    }
+    function killEnemy(e) {
+      if (e.dead) return; e.dead = true;
+      const big = e.type === 'boss' || e.type === 'tank';
+      spawnExp(e.x, e.y, e.col, big ? 42 : 22, big); snd(big ? 'xb' : 'xs');
+      if (typeof shake === 'function') shake(e.type === 'boss' ? 18 : big ? 8 : 0);
+      if (typeof addCombo === 'function') addCombo();
+      const sc = typeof comboMult === 'function' ? Math.floor(e.sc * comboMult()) : e.sc;
+      score += sc; spawnCoins(e.x, e.y, e.type === 'boss' ? 10 : (e.type === 'tank' ? 4 : 1), e.coins);
+      if (big) spawnPup(e.x, e.y);
+      if (e.type === 'boss') { bossOn = false; FT(W / 2 - 65, H / 2, 'BOSS DEFEATED!', '#ffcc00'); if (typeof shake === 'function') shake(22); }
+      FT(e.x, e.y - 30, `+${sc}`, '#fff'); updateHUD();
+    }
+
+    // ═══════════════ WAVES ═══════════════
+    function startWave() {
+      wave++; const boss = wave % 3 === 0;
+      const wb = document.getElementById('WAVEBANNER');
+      document.getElementById('WBTEXT').textContent = boss ? '⚠ BOSS WAVE' : `WAVE ${wave}`;
+      document.getElementById('WBSUB').textContent = boss ? 'PREPARE DEFENSES' : 'ENEMIES INCOMING';
+      wb.classList.add('show'); setTimeout(() => wb.classList.remove('show'), 2500);
+      snd('wave'); wTimer = boss ? 0 : (16 + wave * 2.5);
+      if (boss) { const bw = document.getElementById('BOSSWARN'); bw.classList.add('flash'); setTimeout(() => bw.classList.remove('flash'), 2700); snd('bw'); setTimeout(() => { if (running && !paused) { spawnEnemy('boss'); bossOn = true; } }, 2900); }
+      const hwb = document.getElementById('HWAVE_BADGE'); if (hwb) hwb.textContent = `WAVE ${wave}`;
+      // CrazyGames ad every 3 waves
+      if (wave % 3 === 1 && wave > 1) cgAdBreak();
+    }
+
+    // ═══════════════ HUD ═══════════════
+    function updateHUD() {
+      document.getElementById('HSC').textContent = Math.floor(score).toLocaleString();
+      document.getElementById('HCN').textContent = `⬡ ${GS.coins}`;
+      document.getElementById('WBADGE').textContent = WEAPONS[GS.weapon].name;
+      const wb = document.getElementById('HWAVE_BADGE'); if (wb) wb.textContent = `WAVE ${wave}`;
+      if (typeof updateLivesHUD === 'function') updateLivesHUD();
+    }
+    function updateHealthBar() {
+      const pct = Math.max(0, player.hp / player.mhp * 100);
+      const bar = document.getElementById('HHPFILL'); bar.style.width = pct + '%';
+      if (pct < 25) { bar.style.background = 'linear-gradient(90deg,#ff2244,#ff6644)'; bar.style.boxShadow = '0 0 8px #ff2244'; }
+      else if (pct < 55) { bar.style.background = 'linear-gradient(90deg,#ffaa00,#ffdd44)'; bar.style.boxShadow = '0 0 6px #ffaa00'; }
+      else { bar.style.background = 'linear-gradient(90deg,#00ff88,#00ffcc)'; bar.style.boxShadow = '0 0 6px #00ff88'; }
+      const xpPct = (score % 1000) / 1000 * 100; document.getElementById('HXPFILL').style.width = xpPct + '%';
+    }
+
+
+    // ══════════════════════════════════════════
+    // COMBO SYSTEM
+    // ══════════════════════════════════════════
+    let comboCount = 0, comboTimer = 0;
+    const COMBO_DECAY = 3.5;
+    function addCombo() {
+      comboCount++; comboTimer = COMBO_DECAY;
+      const el = document.getElementById('COMBO_HUD');
+      const num = document.getElementById('COMBO_NUM');
+      if (comboCount >= 2) { el.classList.add('show'); num.textContent = `×${comboCount}`; }
+    }
+    function updateCombo(dt) {
+      if (comboCount < 2) return;
+      comboTimer -= dt;
+      if (comboTimer <= 0) { comboCount = 0; document.getElementById('COMBO_HUD').classList.remove('show'); }
+    }
+    function comboMult() { return comboCount >= 10 ? 3 : comboCount >= 5 ? 2 : comboCount >= 2 ? 1.5 : 1; }
+
+    // Screen shake
+    let shakeAmt = 0;
+    function shake(amt) { shakeAmt = Math.max(shakeAmt, amt); }
+    function applyShake() {
+      try {
+        const cv2 = document.getElementById('GC');
+        if (!cv2) return;
+        if (shakeAmt < .2) { shakeAmt = 0; cv2.style.transform = ''; return; }
+        const dx = (Math.random() - .5) * shakeAmt * 2;
+        const dy = (Math.random() - .5) * shakeAmt * 2;
+        cv2.style.transform = `translate(${dx}px,${dy}px)`;
+        shakeAmt *= .72;
+      } catch(e) {}
+    }
+
+    // Lives system
+    let lives = 3;
+    function updateLivesHUD() {
+      const el = document.getElementById('HLIVES'); if (!el) return; el.innerHTML = '';
+      for (let i = 0; i < 3; i++) { const s = document.createElement('span'); s.className = 'hrt' + (i >= lives ? ' lost' : ''); s.textContent = '❤'; el.appendChild(s); }
+    }
+    function takeLoss() {
+      lives--; updateLivesHUD();
+      if (lives <= 0) { gameOver(); return; }
+      snd('hit'); shake(14);
+      spawnExp(player.x, player.y, '#ff6600', 28, false);
+      player.hp = player.mhp; player.inv = 3;
+      FT(player.x, player.y - 50, lives + ' LIFE LEFT!', '#ff8800');
+      updateHealthBar(); comboCount = 0; document.getElementById('COMBO_HUD').classList.remove('show');
+    }
+
+    // ═══════════════ GAME LOOP ═══════════════
+    let player, bullets, enemies, ebullets, coins, parts, pups;
+    let score, wave, wTimer, eTimer, bossOn = false;
+    let running = false, paused = false, lt = 0;
+    let aps = {}, ptimers = {};
+
+    function loop(ts) {
+      if (!running || paused) { lt = ts; requestAnimationFrame(loop); return; }
+      const dt = Math.min((ts - lt) / 1000, .05); lt = ts;
+      drawBG(dt); cx.clearRect(0, 0, W, H);
+      eTimer -= dt;
+      if (eTimer <= 0 && !bossOn) { const r = Math.max(.55, 2.4 - wave * .07); eTimer = r * (.65 + Math.random() * .7); const rr = Math.random(); if (rr < .09 + wave * .025) spawnEnemy('tank'); else if (rr < .22) spawnEnemy('kamikaze'); else if (rr < .46) spawnEnemy('fast'); else spawnEnemy('basic'); }
+      wTimer -= dt; if (wTimer <= 0 && !bossOn) startWave();
+      if (!player) { requestAnimationFrame(loop); return; }
+      player.fc -= dt; const fr = aps.rapid ? (player.fr * .28) : player.fr;
+      if (player.fc <= 0) { shoot(); player.fc = fr; }
+      player.inv = Math.max(0, player.inv - dt);
+      if (typeof updateCombo === 'function') updateCombo(dt);
+      if (typeof applyShake === 'function') applyShake();
+      movePlayer(dt); updateEnemies(dt); collide();
+      drawParts(dt); drawBullets(dt); drawEBullets(dt); drawEnemies(); drawCoins(dt); drawPups(dt); drawPlayer(dt);
+      enemies = enemies.filter(e => !e.dead && e.y < H + 130);
+      score += dt * 2.5; updateHUD(); updateHealthBar();
+      requestAnimationFrame(loop);
+    }
+
+    // ═══════════════ INIT / OVER ═══════════════
+    function initGame() {
+      player = mkPlayer(); bullets = []; enemies = []; ebullets = []; coins = []; parts = []; pups = [];
+      aps = {}; ptimers = {}; score = 0; wave = 0; bossOn = false; eTimer = 1.2; wTimer = 4;
+      if (typeof lives !== 'undefined') lives = 3;
+      if (typeof comboCount !== 'undefined') comboCount = 0;
+      if (typeof comboTimer !== 'undefined') comboTimer = 0;
+      shakeAmt = 0;
+      document.getElementById('PUD').innerHTML = '';
+      const ch = document.getElementById('COMBO_HUD'); if (ch) ch.classList.remove('show');
+      if (typeof updateLivesHUD === 'function') updateLivesHUD();
+      updateHUD(); updateHealthBar(); running = true; paused = false; lt = performance.now();
+      startWave(); startMusic();
+    }
+    function gameOver() {
+      running = false; stopMusic(); cgStop();
+      const fs = Math.floor(score), isNew = fs > GS.best; if (isNew) GS.best = fs;
+      document.getElementById('GO_SC').textContent = fs.toLocaleString();
+      document.getElementById('GO_WV').textContent = wave;
+      document.getElementById('GO_CN').textContent = GS.coins;
+      if (document.getElementById('GO_BEST')) document.getElementById('GO_BEST').textContent = GS.best.toLocaleString();
+      document.getElementById('GO_NEWBEST').style.display = isNew ? 'block' : 'none';
+      spawnExp(player.x, player.y, '#ff6600', 60, true); snd('xb');
+      setTimeout(() => document.getElementById('SCR_OVER').classList.remove('hidden'), 750);
+    }
+    function doPause() { paused = true; stopMusic(); cgStop(); document.getElementById('SCR_PAUSE').classList.remove('hidden'); }
+    function unPause() { document.getElementById('SCR_PAUSE').classList.add('hidden'); paused = false; lt = performance.now(); startMusic(); cgStart(); }
+
+    // ═══════════════ SHOP ═══════════════
+    let shopFrom = 'title';
+    function openShop(from) {
+      shopFrom = from || 'title';
+      if (running && from !== 'title' && from !== 'over') doPause();
+      document.getElementById('SHOP_COINS').textContent = GS.coins;
+      document.getElementById('SCR_SHOP').classList.remove('hidden');
+      switchTab('ships'); renderShipGrid(); renderUpgrades(); renderWeapons();
+    }
+    function closeShop() {
+      document.getElementById('SCR_SHOP').classList.add('hidden');
+      if (shopFrom === 'title' || !running) document.getElementById('SCR_TITLE').classList.remove('hidden');
+      else if (shopFrom === 'over') document.getElementById('SCR_OVER').classList.remove('hidden');
+      else unPause();
+    }
+    function switchTab(tab) {
+      document.querySelectorAll('.STAB').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.STAB_CONTENT').forEach(t => t.classList.remove('active'));
+      document.getElementById('TAB_' + tab.toUpperCase()).classList.add('active');
+      document.getElementById('TCONT_' + tab).classList.add('active');
+    }
+
+    function renderShipGrid() {
+      const grid = document.getElementById('SHIP_GRID'); grid.innerHTML = '';
+      document.getElementById('SHOP_COINS').textContent = GS.coins;
+      Object.values(SHIPS).forEach(ship => {
+        const owned = GS.ownedShips.includes(ship.id), active = GS.activeShip === ship.id;
+        const canBuy = !owned && GS.coins >= ship.cost;
+        const card = document.createElement('div');
+        card.className = `SHIP_CARD${owned ? ' owned' : ''}${active ? ' active_ship' : ''}${!owned && !canBuy ? ' locked_card' : ''}`;
+        card.style.setProperty('--scol', ship.color);
+        if (active) card.innerHTML += `<div class="ACTIVE_BADGE">ACTIVE</div>`;
+        if (owned && !active) card.innerHTML += `<div class="OWNED_BADGE">OWNED</div>`;
+        // SVG ship image
+        const imgWrap = document.createElement('div'); imgWrap.className = 'SHIP_IMG_WRAP'; imgWrap.style.setProperty('--scol', ship.color); imgWrap.innerHTML = SHIP_SVGS[ship.id] || '';
+        card.appendChild(imgWrap);
+        const statBars = `
+      <div class="SHIP_NAME">${ship.name}</div>
+      <div class="SHIP_CLASS">${ship.class} CLASS</div>
+      <div class="SHIP_STATS">
+        <div class="SSTAT"><span class="SSTAT_LABEL">HP</span><div class="SSTAT_BAR"><div class="SSTAT_FILL" style="width:${ship.stats.hp * 10}%;background:linear-gradient(90deg,#00ff88,#00ffcc);"></div></div></div>
+        <div class="SSTAT"><span class="SSTAT_LABEL">DMG</span><div class="SSTAT_BAR"><div class="SSTAT_FILL" style="width:${ship.stats.dmg * 10}%;background:linear-gradient(90deg,#ff8800,#ffcc00);"></div></div></div>
+        <div class="SSTAT"><span class="SSTAT_LABEL">SPD</span><div class="SSTAT_BAR"><div class="SSTAT_FILL" style="width:${ship.stats.spd * 10}%;background:linear-gradient(90deg,#00aaff,#00f5ff);"></div></div></div>
+        <div class="SSTAT"><span class="SSTAT_LABEL">FIRE</span><div class="SSTAT_BAR"><div class="SSTAT_FILL" style="width:${ship.stats.fr * 10}%;background:linear-gradient(90deg,#ff0080,#ff66aa);"></div></div></div>
+      </div>`;
+        const btnHtml = active ? `<button class="SHIP_BTN equipped">✓ EQUIPPED</button>` :
+          owned ? `<button class="SHIP_BTN equip" onclick="equipShip('${ship.id}')">EQUIP</button>` :
+            canBuy ? `<button class="SHIP_BTN buy" onclick="buyShip('${ship.id}')">⬡ ${ship.cost}</button>` :
+              `<button class="SHIP_BTN locked">⬡ ${ship.cost}</button>`;
+        card.innerHTML += statBars + btnHtml;
+        grid.appendChild(card);
+      });
+    }
+    function buyShip(id) { const ship = SHIPS[id]; if (GS.coins < ship.cost) return; GS.coins -= ship.cost; GS.ownedShips.push(id); GS.activeShip = id; renderShipGrid(); renderUpgrades(); document.getElementById('SHOP_COINS').textContent = GS.coins; animateTitleShip(); }
+    function equipShip(id) { GS.activeShip = id; renderShipGrid(); renderUpgrades(); animateTitleShip(); }
+
+    function renderUpgrades() {
+      const container = document.getElementById('UPG_CONTAINER'); container.innerHTML = '';
+      const ship = SHIPS[GS.activeShip];
+      const hdr = document.createElement('div'); hdr.innerHTML = `<div class="UPG_TITLE">Upgrading: ${ship.name} (${ship.class})</div>`; container.appendChild(hdr);
+      const grid = document.createElement('div'); grid.className = 'UPG_GRID';
+      UPGRADES.forEach(upg => {
+        const upgs = GS.shipUpgrades[GS.activeShip]; const lvl = upgs[upg.key], maxed = lvl >= upg.max, cost = maxed ? 0 : upg.costPer[lvl]; const can = !maxed && GS.coins >= cost;
+        const card = document.createElement('div'); card.className = `UPG_CARD${maxed ? ' maxed_c' : ''}${!can && !maxed ? ' cant_c' : ''}`;
+        let dots = ''; for (let i = 0; i < upg.max; i++)dots += `<div class="UDOT${i < lvl ? ' on' : ''}"></div>`;
+        card.innerHTML = `<span class="UPG_ICON">${upg.icon}</span><div class="UPG_NAME">${upg.name}</div><div class="UPG_DESC">${upg.desc}</div><div class="UPG_LVLDOTS">${dots}</div><div class="UPG_COST${maxed ? ' maxed_c' : ''}">${maxed ? 'MAX LEVEL' : `⬡ ${cost}`}</div>`;
+        if (!maxed && can) card.onclick = () => { GS.coins -= cost; GS.shipUpgrades[GS.activeShip][upg.key]++; document.getElementById('SHOP_COINS').textContent = GS.coins; if (running && player && GS.activeShip === player.shipId) { if (upg.key === 'hp') { player.mhp += Math.floor(SHIPS[GS.activeShip].baseHP * .22); player.hp = Math.min(player.hp + Math.floor(SHIPS[GS.activeShip].baseHP * .22), player.mhp); } if (upg.key === 'spd') player.spd += SHIPS[GS.activeShip].baseSPD * .12; if (upg.key === 'fr') player.fr = Math.max(.06, player.fr * .94); if (upg.key === 'dmg') player.dmg += Math.floor(SHIPS[GS.activeShip].baseDMG * .18); updateHealthBar(); } renderUpgrades(); renderShipGrid(); };
+        grid.appendChild(card);
+      });
+      container.appendChild(grid);
+    }
+
+    function renderWeapons() {
+      const wg = document.getElementById('WEP_GRID'); wg.innerHTML = '';
+      Object.entries(WEAPONS).forEach(([k, cfg]) => {
+        const owned = GS.ownedWeapons.includes(k), active = GS.weapon === k, can = !owned && GS.coins >= cfg.cost;
+        const card = document.createElement('div'); card.className = `WEP_CARD${owned ? ' owned_w' : ''}${active ? ' active_w' : ''}${!owned && !can ? ' cant_c' : ''}`;
+        card.innerHTML = `<div class="WEP_NAME" style="color:${cfg.col}">${cfg.name}</div><div class="WEP_ICON_WRAP">${WEP_SVGS[k] || ''}</div><div class="WEP_DESC">${cfg.desc}</div><div class="WEP_COST" style="color:${owned ? '#00ff88' : '#ffee00'}">${owned ? (active ? '✓ ACTIVE' : 'EQUIP') : `⬡ ${cfg.cost}`}</div>`;
+        if (owned) card.onclick = () => { GS.weapon = k; if (player) player.fc = 0; renderWeapons(); };
+        else if (can) card.onclick = () => { GS.coins -= cfg.cost; GS.ownedWeapons.push(k); GS.weapon = k; document.getElementById('SHOP_COINS').textContent = GS.coins; renderWeapons(); };
+        wg.appendChild(card);
+      });
+    }
+
+    // Title ship animation
+    let titleAnimFrame = null;
+    function animateTitleShip() {
+      const c = document.getElementById('TITLE_SHIP_CANVAS'), ctx2 = c.getContext('2d');
+      if (titleAnimFrame) cancelAnimationFrame(titleAnimFrame);
+      let t = 0;
+      function frame() {
+        try {
+          ctx2.clearRect(0, 0, c.width, c.height);
+          t += .04;
+          const col = SHIPS[GS.activeShip].color;
+          const r = parseInt(col.slice(1,3),16), g = parseInt(col.slice(3,5),16), b = parseInt(col.slice(5,7),16);
+          const grd = ctx2.createRadialGradient(60, 70, 0, 60, 70, 50);
+          grd.addColorStop(0, `rgba(${r},${g},${b},.2)`);
+          grd.addColorStop(1, 'transparent');
+          ctx2.fillStyle = grd;
+          ctx2.fillRect(0, 0, c.width, c.height);
+          drawShipOnCtx(ctx2, GS.activeShip, 60, 75, 1.75, t);
+        } catch(e) {}
+        titleAnimFrame = requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // ═══════════════ BUTTONS ═══════════════
+    document.getElementById('BTN_START').onclick = () => {
+      document.getElementById('SCR_TITLE').classList.add('hidden');
+      cgStart(); initGame(); requestAnimationFrame(loop);
+    };
+    document.getElementById('BTN_TITLESHOP').onclick = () => { document.getElementById('SCR_TITLE').classList.add('hidden'); openShop('title'); };
+    document.getElementById('SHOP_BACK').onclick = () => closeShop();
+    document.getElementById('PAUSEBTN').onclick = () => { if (running) paused ? unPause() : doPause(); };
+    document.getElementById('BTN_RESUME').onclick = () => unPause();
+    document.getElementById('BTN_PAUSESHOP').onclick = () => { document.getElementById('SCR_PAUSE').classList.add('hidden'); openShop('pause'); };
+    document.getElementById('BTN_RETRY').onclick = () => {
+      document.getElementById('SCR_OVER').classList.add('hidden');
+      cgStart(); initGame();
+    };
+    document.getElementById('BTN_OVERSHOP').onclick = () => { document.getElementById('SCR_OVER').classList.add('hidden'); openShop('over'); };
+    document.getElementById('SNDBTN').onclick = () => { sndOn = !sndOn; document.getElementById('SNDBTN').textContent = sndOn ? '🔊' : '🔇'; if (!sndOn) stopMusic(); else if (running && !paused) startMusic(); };
+
+    // ═══════════════ BOOT ═══════════════
+    document.getElementById('FSBTN').onclick = () => {
+      const el = document.getElementById('GW');
+      if (!document.fullscreenElement) { el.requestFullscreen && el.requestFullscreen(); }
+      else { document.exitFullscreen && document.exitFullscreen(); }
+    };
+    initStars(); drawBG(0); animateTitleShip(); requestAnimationFrame(loop);
+  </script>
+</body>
+
+</html>

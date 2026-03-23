@@ -1,0 +1,514 @@
+/* Contactstyle.css – exact replica of the design, fully responsive */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+}
+
+body {
+    background: linear-gradient(160deg, #f0f5fe 0%, #e9f0fa 100%);
+    color: #0f172a;
+    min-height: 100vh;
+}
+
+/* ---------- navigation (same style as all pages) ---------- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 6%;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(10px);
+    border-radius: 3rem;
+    margin: 1.5rem 2rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #0f172a;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: #334155;
+    font-weight: 500;
+    font-size: 1.1rem;
+    transition: 0.2s;
+    position: relative;
+    padding-bottom: 4px;
+}
+
+nav a:hover {
+    color: #2563eb;
+}
+
+nav a.active {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+nav a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #2563eb;
+    border-radius: 6px;
+}
+
+/* ---------- contact page specific ---------- */
+.contact-page {
+    max-width: 1100px;
+    margin: 0 auto 3rem auto;
+    padding: 0 5%;
+}
+
+/* header (exact wording) */
+.contact-header {
+    text-align: center;
+    margin: 2rem 0 2.5rem 0;
+    position: relative;
+}
+
+.contact-header h1 {
+    font-size: 3.8rem;
+    font-weight: 700;
+    color: #0b1e33;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.subhead {
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 1.25rem;
+    color: #2c3e50;
+    background: rgba(255,255,255,0.6);
+    padding: 0.7rem 2rem;
+    border-radius: 60px;
+    backdrop-filter: blur(4px);
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+.header-illustrations {
+    position: absolute;
+    top: -1rem;
+    right: 10%;
+    display: flex;
+    gap: 1.5rem;
+    opacity: 0.7;
+    z-index: 0;
+}
+
+.illu {
+    font-size: 2.5rem;
+    transform: rotate(-15deg);
+}
+
+.illu2 {
+    transform: rotate(10deg);
+}
+
+/* two-column grid for Email / WhatsApp */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin: 2.5rem 0 2rem 0;
+}
+
+/* contact cards – exactly as image: clean, white, shadow, left-aligned */
+.contact-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    border-radius: 2.5rem;
+    padding: 2.5rem 2.2rem;
+    box-shadow: 0 25px 40px -15px rgba(0,30,60,0.2);
+    border: 1px solid rgba(255,255,255,0.8);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.95);
+}
+
+.email-card:hover {
+    box-shadow: 0 30px 45px -12px rgba(37,99,235,0.25);
+}
+
+.whatsapp-card:hover {
+    box-shadow: 0 30px 45px -12px rgba(37,211,102,0.25);
+}
+
+.contact-card h2 {
+    font-size: 2.4rem;
+    font-weight: 650;
+    color: #0a2942;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+}
+
+.email-card h2 {
+    border-bottom: 3px solid rgba(37,99,235,0.2);
+}
+
+.whatsapp-card h2 {
+    border-bottom: 3px solid rgba(37,211,102,0.2);
+}
+
+.card-title-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.25rem;
+    color: white;
+    font-size: 1.2rem;
+    margin-right: 0.75rem;
+    font-weight: bold;
+}
+
+.email-card .card-title-icon {
+    background: #2563eb;
+}
+
+.whatsapp-card .card-title-icon {
+    background: #25D366;
+}
+
+.contact-detail {
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 40px;
+    margin: 0.8rem 0 1rem 0;
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    word-break: break-word;
+    max-width: 100%;
+}
+
+.email-card .contact-detail {
+    color: #1e3a8a;
+    background: rgba(37,99,235,0.08);
+    border: 1px solid rgba(37,99,235,0.15);
+}
+
+.whatsapp-card .contact-detail {
+    color: #128C7E;
+    background: rgba(37,211,102,0.08);
+    border: 1px solid rgba(37,211,102,0.15);
+}
+
+.detail-icon {
+    margin-right: 0.75rem;
+    font-size: 1.5rem;
+}
+
+.contact-description {
+    font-size: 1.1rem;
+    color: #2d3c53;
+    margin: 0.5rem 0 1.8rem 0;
+    line-height: 1.5;
+    flex-grow: 1;
+}
+
+/* buttons (Send Email / Send Message) */
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    background: #2563eb;
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    border-radius: 3rem;
+    font-size: 1.2rem;
+    box-shadow: 0 12px 22px -8px #1d4ed880;
+    transition: 0.2s;
+    border: none;
+    align-self: flex-start;
+    margin-top: 0.8rem;
+    letter-spacing: 0.3px;
+}
+
+.contact-btn:hover {
+    background: #1d4ed8;
+    transform: scale(1.02);
+    box-shadow: 0 16px 26px -6px #1e3a8a;
+}
+
+.whatsapp-btn {
+    background: #25D366;
+    box-shadow: 0 12px 22px -8px #25D36680;
+}
+
+.whatsapp-btn:hover {
+    background: #128C7E;
+    box-shadow: 0 16px 26px -6px #075E54;
+    transform: scale(1.02);
+}
+
+.btn-icon {
+    margin-right: 0.75rem;
+    font-size: 1.3rem;
+}
+
+/* social row (exact match: "Or find me on:" + icons) */
+.social-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin: 3rem 0 2.5rem 0;
+    background: rgba(255,255,255,0.5);
+    padding: 1rem 2rem;
+    border-radius: 60px;
+    backdrop-filter: blur(4px);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px solid rgba(255,255,255,0.7);
+}
+
+.social-prefix {
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #1e293b;
+    white-space: nowrap;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1.3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* each icon styled as a minimal bubble – exactly like image (simple, readable) */
+.fb {
+    font-size: 1.8rem;
+    line-height: 1;
+    background: rgba(37,99,235,0.1);
+    width: 50px;
+    height: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    /* backdrop-filter: blur(2px); */
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    transition: 0.2s;
+    cursor: default; /* not interactive, just design */
+}
+
+.fb:hover {
+    transform: scale(1.08);
+    box-shadow: 0 2px 22px -5px #1581da;
+    
+}
+
+/* "Always Learning & Growing..." footer */
+.learning-footer {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #2563eb;
+    background: rgba(255,255,255,0.6);
+    padding: 0.9rem 2rem;
+    border-radius: 60px;
+    width: fit-content;
+    margin: 2rem auto 1rem auto;
+    backdrop-filter: blur(4px);
+    border: 2px dashed #a5c0fa;
+    letter-spacing: 0.5px;
+}
+
+.fb{
+    width: 50px;
+}
+/* ===== FULL RESPONSIVENESS ===== */
+@media screen and (max-width: 900px) {
+    nav {
+        padding: 1rem 5%;
+        margin: 1.2rem 1.5rem;
+    }
+    nav ul {
+        gap: 1.8rem;
+    }
+    .contact-header h1 {
+        font-size: 3.2rem;
+    }
+    .subhead {
+        font-size: 1.1rem;
+        padding: 0.6rem 1.5rem;
+    }
+    .contact-grid {
+        gap: 1.5rem;
+    }
+    .contact-card {
+        padding: 2rem 1.8rem;
+    }
+    .contact-card h2 {
+        font-size: 2rem;
+    }
+    .contact-detail {
+        font-size: 1.2rem;
+    }
+    .header-illustrations {
+        right: 5%;
+        gap: 1rem;
+    }
+    .illu {
+        font-size: 2rem;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    nav {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        margin: 1rem;
+        border-radius: 2rem;
+    }
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.2rem 1.5rem;
+    }
+    .logo {
+        font-size: 1.8rem;
+    }
+    .contact-header h1 {
+        font-size: 2.8rem;
+    }
+    .subhead {
+        font-size: 1rem;
+    }
+    .contact-grid {
+        grid-template-columns: 1fr;  /* stacked on mobile */
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .social-row {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 1.2rem 1.5rem;
+    }
+    .social-prefix {
+        font-size: 1.2rem;
+    }
+    .icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.8rem;
+    }
+    .learning-footer {
+        font-size: 1.3rem;
+        padding: 0.7rem 1.5rem;
+    }
+    .header-illustrations {
+        top: 2rem;
+        right: 0;
+        left: 0;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .illu {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    nav {
+        padding: 0.8rem 1rem;
+        margin: 0.8rem;
+    }
+    nav ul {
+        gap: 0.8rem 1rem;
+    }
+    nav a {
+        font-size: 1rem;
+    }
+    .logo {
+        font-size: 1.6rem;
+    }
+    .contact-header h1 {
+        font-size: 2.4rem;
+    }
+    .subhead {
+        font-size: 0.95rem;
+        padding: 0.5rem 1rem;
+    }
+    .contact-card h2 {
+        font-size: 1.9rem;
+    }
+    .contact-detail {
+        font-size: 1.1rem;
+        padding: 0.4rem 1rem;
+    }
+    .contact-description {
+        font-size: 1rem;
+    }
+    .contact-btn {
+        padding: 0.8rem 1.8rem;
+        font-size: 1.1rem;
+    }
+    .social-row {
+        padding: 1rem;
+    }
+    .icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.4rem;
+    }
+    .learning-footer {
+        font-size: 1.2rem;
+        padding: 0.6rem 1.2rem;
+    }
+    .header-illustrations {
+        top: 3rem;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .contact-header h1 {
+        font-size: 2rem;
+    }
+    .social-icons {
+        gap: 0.8rem;
+    }
+    .icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1.2rem;
+    }
+}
